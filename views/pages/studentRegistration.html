@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - School Queue System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .registration-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .registration-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            margin-bottom: 1rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a42a0);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .input-group-text {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px 0 0 10px;
+        }
+        .input-group .form-control {
+            border-radius: 0 10px 10px 0;
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .school-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        .strength-weak { background-color: #dc3545; }
+        .strength-medium { background-color: #ffc107; }
+        .strength-strong { background-color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+                <div class="registration-card">
+                    <!-- Header -->
+                    <div class="registration-header">
+                        <div class="school-logo">
+                            <i class="fas fa-user-plus fa-2x"></i>
+                        </div>
+                        <h3 class="mb-2">Student Registration</h3>
+                        <p class="mb-0 opacity-75">Create your account to access queue services</p>
+                    </div>
+                    
+                    <!-- Registration Form -->
+                    <div class="p-4">
+                        <div id="alertContainer"></div>
+                        
+                        <form id="registrationForm">
+                            <!-- Personal Information Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="studentName" class="form-label">Full Name *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-user"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="studentName" 
+                                                   name="studentName"
+                                                   placeholder="Enter your full name"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="studentCode" class="form-label">Student Code *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-id-card"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="studentCode" 
+                                                   name="studentCode"
+                                                   placeholder="e.g., STU2024001"
+                                                   required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email Address *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-envelope"></i>
+                                            </span>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   id="email" 
+                                                   name="email"
+                                                   placeholder="your.email@example.com"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-phone"></i>
+                                            </span>
+                                            <input type="tel" 
+                                                   class="form-control" 
+                                                   id="phone" 
+                                                   name="phone"
+                                                   placeholder="+1234567890">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Academic Information Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-graduation-cap me-2"></i>Academic Information
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label for="course" class="form-label">Course/Program *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-book"></i>
+                                            </span>
+                                            <select class="form-select" id="course" name="course" required>
+                                                <option value="">Select your course</option>
+                                                <option value="Computer Science">Computer Science</option>
+                                                <option value="Business Administration">Business Administration</option>
+                                                <option value="Engineering">Engineering</option>
+                                                <option value="Medicine">Medicine</option>
+                                                <option value="Law">Law</option>
+                                                <option value="Education">Education</option>
+                                                <option value="Arts">Arts</option>
+                                                <option value="Science">Science</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <label for="year" class="form-label">Academic Year *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </span>
+                                            <select class="form-select" id="year" name="year" required>
+                                                <option value="">Year</option>
+                                                <option value="1">1st Year</option>
+                                                <option value="2">2nd Year</option>
+                                                <option value="3">3rd Year</option>
+                                                <option value="4">4th Year</option>
+                                                <option value="5">5th Year</option>
+                                                <option value="6">6th Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Section -->
+                            <div class="form-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-lock me-2"></i>Account Security
+                                </h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">Password *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-key"></i>
+                                            </span>
+                                            <input type="password" 
+                                                   class="form-control" 
+                                                   id="password" 
+                                                   name="password"
+                                                   placeholder="Create a strong password"
+                                                   required>
+                                            <button class="btn btn-outline-secondary" 
+                                                    type="button" 
+                                                    id="togglePassword">
+                                                <i class="fas fa-eye" id="eyeIcon"></i>
+                                            </button>
+                                        </div>
+                                        <div class="password-strength" id="passwordStrength"></div>
+                                        <small class="text-muted">Password must be at least 6 characters long</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                            <input type="password" 
+                                                   class="form-control" 
+                                                   id="confirmPassword" 
+                                                   name="confirmPassword"
+                                                   placeholder="Confirm your password"
+                                                   required>
+                                        </div>
+                                        <div id="passwordMatch" class="small mt-1"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terms and Submit -->
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                <label class="form-check-label" for="agreeTerms">
+                                    I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> 
+                                    and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mb-3" id="registerBtn">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Create Account
+                            </button>
+                        </form>
+                        
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account?</p>
+                            <a href="studentLogin.html" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Login Here
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            strengthBar.className = 'password-strength';
+            if (strength === 0) {
+                strengthBar.style.width = '0%';
+            } else if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthBar.style.width = '33%';
+            } else if (strength === 3) {
+                strengthBar.classList.add('strength-medium');
+                strengthBar.style.width = '66%';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthBar.style.width = '100%';
+            }
+        });
+
+        // Password match checker
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (confirmPassword === '') {
+                matchDiv.innerHTML = '';
+                this.classList.remove('is-valid', 'is-invalid');
+            } else if (password === confirmPassword) {
+                matchDiv.innerHTML = '<i class="fas fa-check text-success"></i> Passwords match';
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                matchDiv.innerHTML = '<i class="fas fa-times text-danger"></i> Passwords do not match';
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+
+        // Handle form submission
+        // Handle form submission - Make sure this runs after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Form submission intercepted by JavaScript!');
+            console.log('JavaScript form handler working!');
+        });
+    } else {
+        console.error('Form not found!');
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('=== FRONTEND REGISTRATION DEBUG ===');
+        console.log('Form submitted via JavaScript');
+        
+        const submitButton = document.getElementById('registerBtn');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Clear previous alerts
+        alertContainer.innerHTML = '';
+        
+        // Get form data with detailed logging
+        const formData = new FormData(this);
+        
+        console.log('FormData entries:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        
+        // Validate passwords match
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        console.log('Password validation:', {
+            passwordLength: password.length,
+            confirmPasswordLength: confirmPassword.length,
+            passwordsMatch: password === confirmPassword
+        });
+        
+        if (password !== confirmPassword) {
+            showAlert('Passwords do not match!', 'danger');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showAlert('Password must be at least 6 characters long!', 'danger');
+            return;
+        }
+        
+        // Show loading state
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+        submitButton.disabled = true;
+        
+        // Build registration data object
+        const registrationData = {
+            name: formData.get('studentName'),
+            studentCode: formData.get('studentCode'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            course: formData.get('course'),
+            year: parseInt(formData.get('year')),
+            password: formData.get('password')
+        };
+        
+        console.log('Registration data object:', {
+            ...registrationData,
+            password: '***' // Hide password in logs
+        });
+        
+        // Validate that all required fields are present
+        const requiredFields = ['name', 'studentCode', 'course', 'year', 'password'];
+        const missingFields = requiredFields.filter(field => !registrationData[field]);
+        
+        if (missingFields.length > 0) {
+            console.error('Missing required fields:', missingFields);
+            showAlert(`Missing required fields: ${missingFields.join(', ')}`, 'danger');
+            
+            // Reset button state
+            submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+            submitButton.disabled = false;
+            return;
+        }
+        
+        // Convert to JSON and log the exact payload
+        const jsonPayload = JSON.stringify(registrationData);
+        console.log('JSON payload length:', jsonPayload.length);
+        console.log('JSON payload:', jsonPayload);
+        
+        // Validate JSON
+        try {
+            JSON.parse(jsonPayload);
+            console.log('JSON is valid');
+        } catch (jsonError) {
+            console.error('JSON validation failed:', jsonError);
+            showAlert('Invalid data format. Please try again.', 'danger');
+            
+            // Reset button state
+            submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+            submitButton.disabled = false;
+            return;
+        }
+        
+        try {
+            console.log('Sending request to:', '/api/auth/register');
+            
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonPayload
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+            
+            // Get response text first to handle potential JSON parsing errors
+            const responseText = await response.text();
+            console.log('Raw response text:', responseText);
+            
+            let result;
+            try {
+                result = JSON.parse(responseText);
+                console.log('Parsed response:', result);
+            } catch (parseError) {
+                console.error('Failed to parse response as JSON:', parseError);
+                showAlert('Server response was not valid JSON', 'danger');
+                return;
+            }
+            
+            if (result.success) {
+                console.log('Registration successful!');
+                showAlert('Registration successful! Redirecting to login...', 'success');
+                
+                setTimeout(() => {
+                    console.log('Redirecting to login page...');
+                    window.location.href = './studentLogin.html';
+                }, 2000);
+            } else {
+                console.log('Registration failed:', result.message);
+                showAlert(result.message || 'Registration failed. Please try again.', 'danger');
+            }
+        } catch (error) {
+            console.error('Fetch error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            showAlert('Network error. Please check your connection and try again.', 'danger');
+        } finally {
+            // Reset button state
+            submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>Create Account';
+            submitButton.disabled = false;
+        }
+    });
+});
+
+// Helper function for alerts (make sure this exists)
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    alertContainer.innerHTML = alertHtml;
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        const alert = alertContainer.querySelector('.alert');
+        if (alert) {
+            alert.classList.remove('show');
+            setTimeout(() => alert.remove(), 150);
+        }
+    }, 5000);
+}
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+            
+            // Scroll to top to show alert
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Clear form validation on input
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+        });
+
+        // Student code formatting
+        document.getElementById('studentCode').addEventListener('input', function() {
+            let value = this.value.toUpperCase();
+            // Remove any non-alphanumeric characters
+            value = value.replace(/[^A-Z0-9]/g, '');
+            this.value = value;
+        });
+    </script>
+</body>
+</html>
