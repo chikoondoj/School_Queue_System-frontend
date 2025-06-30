@@ -1,3 +1,5 @@
+const BASE_URL = 'https://school-queue-system-backend.onrender.com';
+
 // Main JavaScript for School Queue System
 class QueueSystem {
     constructor() {
@@ -9,6 +11,7 @@ class QueueSystem {
         this.setupFormValidation();
         this.setupRealTimeUpdates();
     }
+    
 
     setupEventListeners() {
         // Navigation
@@ -192,11 +195,12 @@ class QueueSystem {
         }
 
         try {
-            const response = await fetch('/api/queue/join', {
+            const response = await fetch('$(BASE_URL)/api/queue/join', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({
                     studentId: studentData.id,
                     service: service
@@ -220,11 +224,12 @@ class QueueSystem {
 
     async nextStudent(service) {
         try {
-            const response = await fetch('/api/admin/next-student', {
+            const response = await fetch('$(BASE_URL)/api/admin/next-student', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({ service })
             });
 
@@ -274,7 +279,7 @@ class QueueSystem {
         if (!queueContainer) return;
 
         try {
-            const response = await fetch('/api/queue/status');
+            const response = await fetch('$(BASE_URL)/api/queue/status');
             const queues = await response.json();
 
             let html = '';
@@ -340,7 +345,7 @@ class QueueSystem {
         if (!statsContainer) return;
 
         try {
-            const response = await fetch('/api/admin/stats');
+            const response = await fetch('$(BASE_URL)/api/admin/stats');
             const stats = await response.json();
 
             const statsHTML = `
