@@ -1,3 +1,5 @@
+
+const BASE_URL = 'https://school-queue-system-backend.onrender.com';
 // Toggle password visibility
 document
   .getElementById("togglePassword")
@@ -40,7 +42,7 @@ document
     };
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("${BASE_URL}/api/auth/login", {
         method: "POST",
         credentials: "include", // Essential for session cookies
         headers: {

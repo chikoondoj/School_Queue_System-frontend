@@ -280,6 +280,7 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+      const BASE_URL = "https://school-queue-system-backend.onrender.com";
       // Toggle password visibility
       document
         .getElementById("togglePassword")
@@ -385,11 +386,14 @@
           }
 
           try {
-            const response = await fetch("/api/auth/admin-register", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name, email, password }), // <-- NO adminCode
-            });
+            const response = await fetch(
+              `${BASE_URL}/api/auth/admin-register`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password }),
+              }
+            );
             const result = await response.json();
             if (result.success && result.adminCode) {
               showAlert(

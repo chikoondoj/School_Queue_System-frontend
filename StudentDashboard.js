@@ -1,3 +1,4 @@
+const BASE_URL = 'https://school-queue-system-backend.onrender.com';
 let socket;
 let studentData = null;
 let currentTicket = null;
@@ -121,7 +122,7 @@ async function loadDashboard() {
 async function loadStudentProfile() {
   console.log("📡 Loading student profile...");
 
-  const response = await fetch("/api/auth/profile", {
+  const response = await fetch("${BASE_URL}/api/auth/profile", {
     method: "GET",
     credentials: "include",
     headers: {
@@ -778,7 +779,7 @@ async function logout() {
   console.log("🚪 Logging out...");
 
   try {
-    await fetch("/api/auth/logout", {
+    await fetch("${BASE_URL}/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });

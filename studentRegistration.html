@@ -483,9 +483,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         try {
-            console.log('Sending request to:', '/api/auth/register');
+            // console.log('Sending request to:', '${BASE_URL}/api/auth/register');
             
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch('${BASE_URL}/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

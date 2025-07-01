@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - School Queue System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #232526 0%, #414345 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+      }
+      .login-card {
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.13);
+        overflow: hidden;
+        margin-top: 60px;
+      }
+      .login-header {
+        background: linear-gradient(45deg, #232526, #414345);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+      .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 1rem;
+      }
+      .form-control:focus {
+        border-color: #232526;
+        box-shadow: 0 0 0 0.2rem rgba(35, 37, 38, 0.15);
+      }
+      .btn-primary {
+        background: linear-gradient(45deg, #232526, #414345);
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(45deg, #414345, #232526);
+        transform: translateY(-2px);
+      }
+      .input-group-text {
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px 0 0 10px;
+      }
+      .alert {
+        border-radius: 10px;
+        border: none;
+      }
+      .admin-logo {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+      }
+      .form-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .section-title {
+        color: #232526;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e0e0e0;
+      }
+      .small-link {
+        color: #232526;
+        text-decoration: none;
+      }
+      .small-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+          <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+              <div class="admin-logo">
+                <i class="fas fa-user-shield fa-2x"></i>
+              </div>
+              <h3 class="mb-2">Admin Login</h3>
+              <p class="mb-0 opacity-75">
+                Login to manage the school queue system
+              </p>
+            </div>
+            <!-- Login Form -->
+            <div class="p-4">
+              <div id="alertContainer"></div>
+              <form id="loginForm">
+                <div class="form-section">
+                  <h5 class="section-title">
+                    <i class="fas fa-user me-2"></i>Admin Credentials
+                  </h5>
+                  <div class="mb-3">
+                    <label for="adminCode" class="form-label"
+                      >Admin Code / Email *</label
+                    >
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-id-badge"></i
+                      ></span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="adminCode"
+                        name="adminCode"
+                        placeholder="Enter your admin code or email"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Password *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"
+                        ><i class="fas fa-key"></i
+                      ></span>
+                      <input
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        name="password"
+                        placeholder="Your password"
+                        required
+                      />
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        id="togglePassword"
+                      >
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 mb-3"
+                  id="loginBtn"
+                >
+                  <i class="fas fa-sign-in-alt me-2"></i>
+                  Login
+                </button>
+              </form>
+              <div class="text-center">
+                <p class="mb-0">No admin account?</p>
+                <a href="adminRegister.html" class="btn btn-outline-dark">
+                  <i class="fas fa-user-plus me-2"></i>
+                  Register as Admin
+                </a>
+                <br />
+                <a href="studentLogin.html" class="small-link mt-2 d-block">
+                  <i class="fas fa-arrow-left me-1"></i>
+                  Back to Student Login
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const BASE_URL = "https://school-queue-system-backend.onrender.com";
+      // Toggle password visibility
+      document
+        .getElementById("togglePassword")
+        .addEventListener("click", function () {
+          const passwordInput = document.getElementById("password");
+          const eyeIcon = document.getElementById("eyeIcon");
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+          } else {
+            passwordInput.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+          }
+        });
+
+      // Handle login
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const loginBtn = document.getElementById("loginBtn");
+          const adminCode = document.getElementById("adminCode").value.trim();
+          const password = document.getElementById("password").value;
+          loginBtn.disabled = true;
+          loginBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+          showAlert("", ""); // Clear alert
+
+          if (!adminCode || !password) {
+            showAlert("Please fill in all fields.", "danger");
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+            loginBtn.disabled = false;
+            return;
+          }
+
+          try {
+            const response = await fetch(`${BASE_URL}/api/auth/admin-login`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ adminCode, password }),
+            });
+            const result = await response.json();
+            if (result.success) {
+              showAlert("Login successful! Redirecting...", "success");
+              setTimeout(() => {
+                window.location.href = "./adminDashboard.html";
+              }, 1200);
+            } else {
+              showAlert(result.message || "Login failed.", "danger");
+            }
+          } catch (error) {
+            showAlert("Network error. Please try again.", "danger");
+          }
+          loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+          loginBtn.disabled = false;
+        });
+
+      // Helper function for alerts
+      function showAlert(message, type) {
+        const alertContainer = document.getElementById("alertContainer");
+        if (!message) {
+          alertContainer.innerHTML = "";
+          return;
+        }
+        const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <i class="fas fa-${
+                  type === "success" ? "check-circle" : "exclamation-circle"
+                } me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        alertContainer.innerHTML = alertHtml;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>

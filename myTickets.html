@@ -80,6 +80,8 @@
     </div>
 
     <script>
+        const BASE_URL = 'https://school-queue-system-backend.onrender.com';
+
         // Modal functionality
         const modal = document.getElementById('ticketModal');
         const closeBtn = document.getElementsByClassName('close')[0];
@@ -101,7 +103,7 @@
 
         function cancelTicket(ticketId) {
             if (confirm('Are you sure you want to cancel this ticket?')) {
-                fetch(`/api/queue/cancel/${ticketId}`, {
+                fetch(`${BASE_URL}/api/queue/cancel/${ticketId}`, {
                     method: 'POST'
                 })
                 .then(response => response.json())
@@ -122,7 +124,7 @@
 
         async function loadTickets() {
             try {
-                const response = await fetch('/api/queue/my-tickets');
+                const response = await fetch('${BASE_URL}/api/queue/my-tickets');
                 const data = await response.json();
                 
                 displayActiveTickets(data.active || []);
@@ -283,7 +285,7 @@
 
         async function loadTicketDetails(ticketId) {
             try {
-                const response = await fetch(`/api/queue/ticket/${ticketId}`);
+                const response = await fetch(`${BASE_URL}/api/queue/ticket/${ticketId}`);
                 const ticket = await response.json();
                 
                 const serviceIcon = getServiceIcon(ticket.serviceType);
