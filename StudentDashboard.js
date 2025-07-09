@@ -29,7 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeSocket() {
   try {
     if (typeof io !== "undefined") {
-      socket = io();
+      socket = io(BASE_URL, {
+        withCredentials: true,
+        transports: ["websocket", "polling"] // Optional but good for Render
+      });
       setupEnhancedSocketListeners();
       console.log("Socket.io initialized with queue tracking");
     } else {
@@ -41,6 +44,7 @@ function initializeSocket() {
     createMockSocket();
   }
 }
+
 
 function setupEnhancedSocketListeners() {
   socket.on("connect", () => {
@@ -122,7 +126,7 @@ async function loadDashboard() {
 async function loadStudentProfile() {
   console.log("📡 Loading student profile...");
 
-  const response = await fetch("${BASE_URL}/api/auth/profile", {
+  const response = await fetch(`${BASE_URL}/api/auth/profile`, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -779,7 +783,7 @@ async function logout() {
   console.log("🚪 Logging out...");
 
   try {
-    await fetch("${BASE_URL}/api/auth/logout", {
+    await fetch(`${BASE_URL}/api/auth/logout`, {
       method: "POST",
       credentials: "include",
     });

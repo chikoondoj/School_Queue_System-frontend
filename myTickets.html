@@ -124,7 +124,7 @@
 
         async function loadTickets() {
             try {
-                const response = await fetch('${BASE_URL}/api/queue/my-tickets');
+                const response = await fetch(`${BASE_URL}/api/queue/my-tickets`);
                 const data = await response.json();
                 
                 displayActiveTickets(data.active || []);
