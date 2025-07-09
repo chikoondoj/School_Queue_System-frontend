@@ -42,7 +42,7 @@ document
     };
 
     try {
-      const response = await fetch("${BASE_URL}/api/auth/login", {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         credentials: "include", // Essential for session cookies
         headers: {
