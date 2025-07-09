@@ -72,7 +72,7 @@ document
 
         // Redirect to student dashboard
         setTimeout(() => {
-          window.location.href = "./studentdashboard.html";
+          window.location.href = "./studentDashboard.html";
         }, 1500);
       } else {
         showAlert(
