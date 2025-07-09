@@ -1,3 +1,21 @@
+    fetch('https://school-queue-system-backend.onrender.com/api/auth/profile', {
+      method: 'GET',
+      credentials: 'include', // 🚨 CRITICAL: this sends cookies
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("✅ Cookie test response:", data);
+      })
+      .catch((err) => {
+        console.error("❌ Cookie test failed:", err);
+      });
+
 
 const BASE_URL = 'https://school-queue-system-backend.onrender.com';
 // Toggle password visibility
