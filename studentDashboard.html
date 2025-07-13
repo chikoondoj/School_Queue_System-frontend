@@ -344,7 +344,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 
     <script>
-      const BASE_URL = 'https://school-queue-system-backend.onrender.com';
+      const BASE_URL = "https://school-queue-system-backend.onrender.com";
 
       let socket;
       let studentData = null;
@@ -376,7 +376,10 @@
       function initializeSocket() {
         try {
           if (typeof io !== "undefined") {
-            socket = io();
+            socket = io(BASE_URL, {
+              withCredentials: true,
+              transports: ["websocket", "polling"], // Optional but good for Render
+            });
             setupEnhancedSocketListeners();
             console.log("Socket.io initialized with queue tracking");
           } else {
