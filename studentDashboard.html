@@ -153,47 +153,50 @@
 
       <!-- Current Ticket Status -->
       <div id="currentTicketSection" style="display: none">
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="ticket-card">
-              <h3 class="mb-3">
-                <i class="fas fa-ticket-alt me-2"></i>Your Current Ticket
-              </h3>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="ticket-number" id="ticketNumber">-</div>
-                  <p class="mb-0">Ticket Number</p>
-                </div>
-                <div class="col-md-4">
-                  <div
-                    class="position-badge badge bg-light text-dark"
-                    id="currentPosition"
-                  >
-                    -
-                  </div>
-                  <p class="mb-0">Position in Queue</p>
-                </div>
-                <div class="col-md-4">
-                  <h4 id="serviceType">-</h4>
-                  <p class="mb-0">Service</p>
-                  <button
-                    class="btn btn-leave-queue btn-sm mt-2"
-                    onclick="leaveQueue()"
-                  >
-                    <i class="fas fa-times"></i> Leave Queue
-                  </button>
-                  <button
-                    class="btn btn-outline-primary btn-sm mt-2 ms-2"
-                    onclick="checkQueuePosition()"
-                  >
-                    <i class="fas fa-search-location"></i> Check Position
-                  </button>
-                </div>
-              </div>
-            </div>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="ticket-card">
+        <h3 class="mb-3">
+          <i class="fas fa-ticket-alt me-2"></i>Your Current Ticket
+        </h3>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="ticket-number" id="ticketNumber">-</div>
+            <p class="mb-0">Ticket Number</p>
+          </div>
+          <div class="col-md-4">
+            <div class="position-badge badge bg-light text-dark" id="currentPosition">-</div>
+            <p class="mb-0">Position in Queue</p>
+          </div>
+          <div class="col-md-4">
+            <h4 id="serviceType">-</h4>
+            <p class="mb-0">Service</p>
+            
+            <!-- ✅ Add estimated wait -->
+            <p>Estimated Wait: <span id="estimatedWait">-</span></p>
+            
+            <!-- ✅ Add join time -->
+            <p>Joined At: <span id="joinTime">-</span></p>
+            
+            <button
+              class="btn btn-leave-queue btn-sm mt-2"
+              onclick="leaveQueue()"
+            >
+              <i class="fas fa-times"></i> Leave Queue
+            </button>
+            <button
+              class="btn btn-outline-primary btn-sm mt-2 ms-2"
+              onclick="checkQueuePosition()"
+            >
+              <i class="fas fa-search-location"></i> Check Position
+            </button>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
 
       <!-- Queue Status Overview -->
       <div class="row mb-4">
