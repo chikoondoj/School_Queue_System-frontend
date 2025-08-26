@@ -783,6 +783,27 @@
         updateQueueOverview(counts, totalInQueue);
       }
 
+      async function refreshServiceData() {
+      try {
+        const res = await fetch("/api/queue/statistics/summary");
+        const json = await res.json();
+
+        if (json.success) {
+          // Pass the array to your function
+          updateEnhancedServicesDisplay(json.statistics.serviceStatistics);
+        }
+      } catch (err) {
+        console.error("Failed to refresh service data:", err);
+      }
+    }
+
+    // Run once on page load
+    refreshServiceData();
+
+    // Poll every 10 seconds for live updates
+    setInterval(refreshServiceData, 10000);
+
+
       // Update individual service card
       function updateServiceCard(serviceKey, serviceData) {
         const card = document.getElementById(`${serviceKey}Card`);

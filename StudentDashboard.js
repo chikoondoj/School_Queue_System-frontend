@@ -216,7 +216,7 @@ async function loadQueueHistory() {
 // Load detailed queue statistics
 async function loadQueueStatistics() {
   try {
-    const response = await sessionRequest("/api/queue/statistics");
+    const response = await sessionRequest("/api/queue/statistics/summary");
     if (response.ok) {
       const stats = await response.json();
       displayQueueStatistics(stats);
