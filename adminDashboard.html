@@ -190,7 +190,7 @@
           summary = await summaryRes.json();
           renderSummary(summary);
 
-          const ticketsRes = await fetch(`${BASE_URL}/api/queue/tickets/all`, {
+          const ticketsRes = await fetch(`${BASE_URL}/api/tickets/all`, {
             credentials: "include",
           });
           tickets = (await ticketsRes.json()).tickets || [];
