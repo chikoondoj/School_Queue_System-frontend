@@ -153,50 +153,54 @@
 
       <!-- Current Ticket Status -->
       <div id="currentTicketSection" style="display: none">
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="ticket-card">
-        <h3 class="mb-3">
-          <i class="fas fa-ticket-alt me-2"></i>Your Current Ticket
-        </h3>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="ticket-number" id="ticketNumber">-</div>
-            <p class="mb-0">Ticket Number</p>
-          </div>
-          <div class="col-md-4">
-            <div class="position-badge badge bg-light text-dark" id="currentPosition">-</div>
-            <p class="mb-0">Position in Queue</p>
-          </div>
-          <div class="col-md-4">
-            <h4 id="serviceType">-</h4>
-            <p class="mb-0">Service</p>
-            
-            <!-- ✅ Add estimated wait -->
-            <p>Estimated Wait: <span id="estimatedWait">-</span></p>
-            
-            <!-- ✅ Add join time -->
-            <p>Joined At: <span id="joinTime">-</span></p>
-            
-            <button
-              class="btn btn-leave-queue btn-sm mt-2"
-              onclick="leaveQueue()"
-            >
-              <i class="fas fa-times"></i> Leave Queue
-            </button>
-            <button
-              class="btn btn-outline-primary btn-sm mt-2 ms-2"
-              onclick="checkQueuePosition()"
-            >
-              <i class="fas fa-search-location"></i> Check Position
-            </button>
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="ticket-card">
+              <h3 class="mb-3">
+                <i class="fas fa-ticket-alt me-2"></i>Your Current Ticket
+              </h3>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="ticket-number" id="ticketNumber">-</div>
+                  <p class="mb-0">Ticket Number</p>
+                </div>
+                <div class="col-md-4">
+                  <div
+                    class="position-badge badge bg-light text-dark"
+                    id="currentPosition"
+                  >
+                    -
+                  </div>
+                  <p class="mb-0">Position in Queue</p>
+                </div>
+                <div class="col-md-4">
+                  <h4 id="serviceType">-</h4>
+                  <p class="mb-0">Service</p>
+
+                  <!-- ✅ Add estimated wait -->
+                  <p>Estimated Wait: <span id="estimatedWait">-</span></p>
+
+                  <!-- ✅ Add join time -->
+                  <p>Joined At: <span id="joinTime">-</span></p>
+
+                  <button
+                    class="btn btn-leave-queue btn-sm mt-2"
+                    onclick="leaveQueue()"
+                  >
+                    <i class="fas fa-times"></i> Leave Queue
+                  </button>
+                  <button
+                    class="btn btn-outline-primary btn-sm mt-2 ms-2"
+                    onclick="checkQueuePosition()"
+                  >
+                    <i class="fas fa-search-location"></i> Check Position
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
 
       <!-- Queue Status Overview -->
       <div class="row mb-4">
@@ -574,7 +578,9 @@
       // Load detailed queue statistics
       async function loadQueueStatistics() {
         try {
-          const response = await sessionRequest("/api/queue/statistics/summary");
+          const response = await sessionRequest(
+            "/api/queue/statistics/summary"
+          );
           if (response.ok) {
             const stats = await response.json();
             displayQueueStatistics(stats);
@@ -784,25 +790,24 @@
       }
 
       async function refreshServiceData() {
-      try {
-        const res = await fetch("/api/queue/statistics/summary");
-        const json = await res.json();
+        try {
+          const res = await fetch("/api/queue/statistics/summary");
+          const json = await res.json();
 
-        if (json.success) {
-          // Pass the array to your function
-          updateEnhancedServicesDisplay(json.statistics.serviceStatistics);
+          if (json.success) {
+            // Pass the array to your function
+            updateEnhancedServicesDisplay(json.statistics.serviceStatistics);
+          }
+        } catch (err) {
+          console.error("Failed to refresh service data:", err);
         }
-      } catch (err) {
-        console.error("Failed to refresh service data:", err);
       }
-    }
 
-    // Run once on page load
-    refreshServiceData();
+      // Run once on page load
+      refreshServiceData();
 
-    // Poll every 10 seconds for live updates
-    setInterval(refreshServiceData, 10000);
-
+      // Poll every 10 seconds for live updates
+      setInterval(refreshServiceData, 10000);
 
       // Update individual service card
       function updateServiceCard(serviceKey, serviceData) {
@@ -835,67 +840,65 @@
       }
 
       // Enhanced queue overview
-      function updateQueueOverview(counts, totalInQueue) {
+      function updateQueueOverview(counts, totalInQueue, lastUpdated) {
         document.getElementById("queueOverview").innerHTML = `
-                <div class="row">
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
-                        <h3 class="text-primary">${totalInQueue}</h3>
-                        <small class="text-muted">Total in Queue</small>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-graduation-cap fa-2x text-primary mb-2"></i>
-                        <h4>${counts.admission.count}</h4>
-                        <small>Admission</small>
-                        <div class="mt-1">
-                            <small class="text-muted">${
-                              counts.admission.avgWait
-                            }min avg</small>
-                        </div>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-user-plus fa-2x text-success mb-2"></i>
-                        <h4>${counts.registration.count}</h4>
-                        <small>Registration</small>
-                        <div class="mt-1">
-                            <small class="text-muted">${
-                              counts.registration.avgWait
-                            }min avg</small>
-                        </div>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
-                        <h4>${counts.financial.count}</h4>
-                        <small>Financial Aid</small>
-                        <div class="mt-1">
-                            <small class="text-muted">${
-                              counts.financial.avgWait
-                            }min avg</small>
-                        </div>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-comments fa-2x text-info mb-2"></i>
-                        <h4>${counts.counseling.count}</h4>
-                        <small>Counseling</small>
-                        <div class="mt-1">
-                            <small class="text-muted">${
-                              counts.counseling.avgWait
-                            }min avg</small>
-                        </div>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
-                        <small class="text-muted">Last Updated</small>
-                        <div class="mt-1">
-                            <small>${
-                              queueData.lastUpdated
-                                ? queueData.lastUpdated.toLocaleTimeString()
-                                : "Never"
-                            }</small>
-                        </div>
-                    </div>
-                </div>
-            `;
+        <div class="row">
+          <div class="col-md-2 text-center">
+            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+            <h3 class="text-primary">${totalInQueue}</h3>
+            <small class="text-muted">Total in Queue</small>
+          </div>
+          <div class="col-md-2 text-center">
+            <i class="fas fa-graduation-cap fa-2x text-primary mb-2"></i>
+            <h4>${counts.admission.count}</h4>
+            <small>Admission</small>
+            <div class="mt-1">
+              <small class="text-muted">${
+                counts.admission.avgWait
+              } min avg</small>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <i class="fas fa-user-plus fa-2x text-success mb-2"></i>
+            <h4>${counts.registration.count}</h4>
+            <small>Registration</small>
+            <div class="mt-1">
+              <small class="text-muted">${
+                counts.registration.avgWait
+              } min avg</small>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+            <h4>${counts.financial.count}</h4>
+            <small>Financial Aid</small>
+            <div class="mt-1">
+              <small class="text-muted">${
+                counts.financial.avgWait
+              } min avg</small>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <i class="fas fa-comments fa-2x text-info mb-2"></i>
+            <h4>${counts.counseling.count}</h4>
+            <small>Counseling</small>
+            <div class="mt-1">
+              <small class="text-muted">${
+                counts.counseling.avgWait
+              } min avg</small>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
+            <small class="text-muted">Last Updated</small>
+            <div class="mt-1">
+              <small>${
+                lastUpdated ? lastUpdated.toLocaleTimeString() : "Never"
+              }</small>
+            </div>
+          </div>
+        </div>
+      `;
       }
 
       // Enhanced current ticket display
