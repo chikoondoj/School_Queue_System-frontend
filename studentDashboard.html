@@ -791,7 +791,7 @@
 
       async function refreshServiceData() {
         try {
-          const res = await fetch("/api/queue/statistics/summary");
+          const res = await fetch(`${BASE_URL}api/queue/statistics/summary`);
           const json = await res.json();
 
           if (json.success) {
