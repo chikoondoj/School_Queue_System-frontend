@@ -55,7 +55,7 @@ document
 
     const formData = new FormData(this);
     const loginData = {
-      studentCode: formData.get("studentCode"),
+      identifier: formData.get("studentCode"),
       password: formData.get("password"),
     };
 
