@@ -1,4 +1,5 @@
-fetch("https://school-queue-system-backend.onrender.com/api/auth/profile", {
+const BASE_URL = "https://school-queue-system-backend.onrender.com";
+fetch(`${BASE_URL}/api/auth/profile`, {
   method: "GET",
   credentials: "include",
   headers: {
@@ -16,7 +17,7 @@ fetch("https://school-queue-system-backend.onrender.com/api/auth/profile", {
     console.error("❌ Cookie test failed:", err);
   });
 
-const BASE_URL = "https://school-queue-system-backend.onrender.com";
+
 // Toggle password visibility
 document
   .getElementById("togglePassword")

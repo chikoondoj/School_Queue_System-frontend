@@ -157,7 +157,7 @@
                       </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                       <label for="studentCode" class="form-label"
                         >Student Code *</label
                       >
@@ -174,7 +174,7 @@
                           required
                         />
                       </div>
-                    </div>
+                    </div> -->
                   </div>
 
                   <div class="row">
@@ -480,9 +480,6 @@
             e.preventDefault();
             e.stopPropagation();
 
-            console.log("=== FRONTEND REGISTRATION DEBUG ===");
-            console.log("Form submitted via JavaScript");
-
             const submitButton = document.getElementById("registerBtn");
             const alertContainer = document.getElementById("alertContainer");
 
@@ -529,7 +526,7 @@
             // Build registration data object
             const registrationData = {
               name: formData.get("studentName"),
-              studentCode: formData.get("studentCode"),
+              // studentCode: formData.get("studentCode"),
               email: formData.get("email"),
               phone: formData.get("phone"),
               course: formData.get("course"),
@@ -545,7 +542,7 @@
             // Validate that all required fields are present
             const requiredFields = [
               "name",
-              "studentCode",
+              // "studentCode",
               "course",
               "year",
               "password",
