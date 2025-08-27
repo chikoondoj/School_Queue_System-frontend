@@ -677,7 +677,7 @@
 
           showLoadingState("Leaving queue...");
 
-          const response = await sessionRequest(`/api/queue/leave${currentTicket.id}`, {
+          const response = await sessionRequest(`/api/queue/leave/${currentTicket.id}`, {
             method: "DELETE",
             body: JSON.stringify({
               ticketId: currentTicket.id,
