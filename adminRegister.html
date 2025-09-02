@@ -395,23 +395,47 @@
               }
             );
             const result = await response.json();
+
             if (result.success && result.adminCode) {
+              // Show alert
               showAlert(
-                `Registration successful!<br>Your Admin Code: <strong>${result.adminCode}</strong><br>You'll need this to log in.`,
+                `Registration successful!<br>
+       Your Admin Code: <strong id="adminCode">${result.adminCode}</strong><br>
+       Click "Copy Code" to copy it and then "Go to Login" when ready.`,
                 "success"
               );
-              setTimeout(() => {
+
+              // Create Copy button
+              const copyBtn = document.createElement("button");
+              copyBtn.innerText = "Copy Code";
+              copyBtn.className = "btn btn-secondary me-2";
+              copyBtn.onclick = () => {
+                const codeText = document.getElementById("adminCode").innerText;
+                navigator.clipboard
+                  .writeText(codeText)
+                  .then(() => alert("Admin code copied to clipboard!"))
+                  .catch(() => alert("Failed to copy code."));
+              };
+              document.body.appendChild(copyBtn);
+
+              // Create Go to Login button
+              const loginBtn = document.createElement("button");
+              loginBtn.innerText = "Go to Login";
+              loginBtn.className = "btn btn-primary";
+              loginBtn.onclick = () => {
                 window.location.href = "./adminLogin.html";
-              }, 3000);
+              };
+              document.body.appendChild(loginBtn);
             } else {
               showAlert(result.message || "Registration failed.", "danger");
             }
           } catch (error) {
             showAlert("Network error. Please try again.", "danger");
+          } finally {
+            registerBtn.innerHTML =
+              '<i class="fas fa-user-plus me-2"></i>Create Admin Account';
+            registerBtn.disabled = false;
           }
-          registerBtn.innerHTML =
-            '<i class="fas fa-user-plus me-2"></i>Create Admin Account';
-          registerBtn.disabled = false;
         });
 
       // Helper function for alerts
