@@ -153,7 +153,6 @@
           <table class="table ticket-table mb-0 table-hover align-middle">
             <thead>
               <tr>
-                <th onclick="sortTable(0)">Ticket # <i class="fas fa-sort"></i></th>
                 <th onclick="sortTable(1)">Student <i class="fas fa-sort"></i></th>
                 <th onclick="sortTable(2)">Student Code <i class="fas fa-sort"></i></th>
                 <th>Service</th>
@@ -309,7 +308,6 @@
           .map(
             (ticket) => `
         <tr>
-          <td>${ticket.ticketNumber || ticket.id}</td>
           <td>${ticket.user?.name || "--"}</td>
           <td>${ticket.user?.studentCode || "--"}</td>
           <td>${
@@ -367,10 +365,7 @@
           if (
             serviceName &&
             !(
-              ticket.service_name ||
-              ticket.serviceType ||
-              ticket.serviceId ||
-              ""
+              ticket.service?.name || ""
             )
               .toLowerCase()
               .includes(serviceName.toLowerCase())
@@ -384,13 +379,10 @@
           if (
             search &&
             !(
-              (ticket.ticketNumber || ticket.id || "")
+              (ticket.user?.name || "")
                 .toLowerCase()
                 .includes(search) ||
-              (ticket.user_name || ticket.studentName || "")
-                .toLowerCase()
-                .includes(search) ||
-              (ticket.studentCode || ticket.userCode || "")
+              (ticket.user?.studentCode | "")
                 .toLowerCase()
                 .includes(search)
             )
