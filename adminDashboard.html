@@ -382,7 +382,7 @@
               (ticket.user?.name || "")
                 .toLowerCase()
                 .includes(search) ||
-              (ticket.user?.studentCode | "")
+              (ticket.user?.studentCode || "")
                 .toLowerCase()
                 .includes(search)
             )
