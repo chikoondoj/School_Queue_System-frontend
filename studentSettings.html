@@ -1,151 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Settings - School Queue System</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-  <style>
-    body { background-color: #f8f9fa; }
-    .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      padding: 2rem 0;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .form-section {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    .btn-primary {
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      border: none;
-      border-radius: 10px;
-      padding: 12px 25px;
-      font-weight: 600;
-      text-transform: uppercase;
-      transition: all 0.3s ease;
-    }
-    .btn-primary:hover { transform: translateY(-2px); }
-    .section-title {
-      border-bottom: 2px solid #e0e0e0;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-      color: #232526;
-    }
-    .alert-custom { border-radius: 10px; font-weight: 500; }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Settings - School Queue System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        padding: 2rem 0;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      .form-section {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
+      .btn-primary {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 10px;
+        padding: 12px 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+      }
+      .section-title {
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        color: #232526;
+      }
+      .alert-custom {
+        border-radius: 10px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header"><i class="fas fa-cog me-2"></i>Student Settings</div>
 
-  <!-- Header -->
-  <div class="header">
-    <i class="fas fa-cog me-2"></i>Student Settings
-  </div>
+    <div class="container mt-4">
+      <!-- Change Password Card -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="fas fa-key me-2"></i>Change Password
+        </h4>
+        <div id="alertContainer"></div>
+        <div class="text-center mb-4">
+          <a href="./studentDashboard.html" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Go to Dashboard
+          </a>
+        </div>
 
-  <div class="container mt-4">
+        <form id="changePasswordForm">
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label"
+              >Current Password</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="currentPassword"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="newPassword"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="confirmNewPassword" class="form-label"
+              >Confirm New Password</label
+            >
+            <input
+              type="password"
+              class="form-control"
+              id="confirmNewPassword"
+              required
+            />
+            <div id="passwordMatchMessage" class="small mt-1"></div>
+          </div>
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+      </div>
 
-    <!-- Change Password Card -->
-    <div class="form-section">
-      <h4 class="section-title"><i class="fas fa-key me-2"></i>Change Password</h4>
-      <div id="alertContainer"></div>
-      <form id="changePasswordForm">
-        <div class="mb-3">
-          <label for="currentPassword" class="form-label">Current Password</label>
-          <input type="password" class="form-control" id="currentPassword" required>
+      <!-- Future Settings Section -->
+      <div class="form-section">
+        <h4 class="section-title">
+          <i class="fas fa-sliders-h me-2"></i>Other Settings
+        </h4>
+        <p class="text-muted">Additional settings options can be added here.</p>
+      </div>
+
+      <!-- Password Changed Modal -->
+      <div
+        class="modal fade"
+        id="passwordChangedModal"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header bg-success text-white">
+              <h5 class="modal-title">
+                <i class="fas fa-check-circle me-2"></i>Password Changed
+              </h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Your password has been changed successfully. Please log in again.
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="newPassword" class="form-label">New Password</label>
-          <input type="password" class="form-control" id="newPassword" required>
-        </div>
-        <div class="mb-3">
-          <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-          <input type="password" class="form-control" id="confirmNewPassword" required>
-          <div id="passwordMatchMessage" class="small mt-1"></div>
-        </div>
-        <button type="submit" class="btn btn-primary">Change Password</button>
-      </form>
+      </div>
     </div>
 
-    <!-- Future Settings Section -->
-    <div class="form-section">
-      <h4 class="section-title"><i class="fas fa-sliders-h me-2"></i>Other Settings</h4>
-      <p class="text-muted">Additional settings options can be added here.</p>
-    </div>
-  </div>
+    <script>
+      const BASE_URL = "https://school-queue-system-backend.onrender.com";
+      const form = document.getElementById("changePasswordForm");
+      const currentPassword = document.getElementById("currentPassword");
+      const newPassword = document.getElementById("newPassword");
+      const confirmNewPassword = document.getElementById("confirmNewPassword");
+      const passwordMatchMessage = document.getElementById(
+        "passwordMatchMessage"
+      );
+      const alertContainer = document.getElementById("alertContainer");
 
-  <script>
-    const BASE_URL = "https://school-queue-system-backend.onrender.com";
-    const form = document.getElementById('changePasswordForm');
-    const currentPassword = document.getElementById('currentPassword');
-    const newPassword = document.getElementById('newPassword');
-    const confirmNewPassword = document.getElementById('confirmNewPassword');
-    const passwordMatchMessage = document.getElementById('passwordMatchMessage');
-    const alertContainer = document.getElementById('alertContainer');
-
-    // Password matching feedback
-    confirmNewPassword.addEventListener('input', () => {
-      if (newPassword.value !== confirmNewPassword.value) {
-        passwordMatchMessage.textContent = "Passwords do not match";
-        passwordMatchMessage.style.color = "red";
-      } else {
-        passwordMatchMessage.textContent = "Passwords match";
-        passwordMatchMessage.style.color = "green";
-      }
-    });
-
-    // Change password form submit
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (newPassword.value !== confirmNewPassword.value) {
-        showAlert("Passwords do not match!", "danger");
-        return;
-      }
-
-      try {
-        const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            currentPassword: currentPassword.value,
-            newPassword: newPassword.value
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          showAlert("Password changed successfully!", "success");
-          form.reset();
-          passwordMatchMessage.textContent = "";
+      // Password matching feedback
+      confirmNewPassword.addEventListener("input", () => {
+        if (newPassword.value !== confirmNewPassword.value) {
+          passwordMatchMessage.textContent = "Passwords do not match";
+          passwordMatchMessage.style.color = "red";
         } else {
-          showAlert(data.message || "Failed to change password", "danger");
+          passwordMatchMessage.textContent = "Passwords match";
+          passwordMatchMessage.style.color = "green";
         }
-      } catch (error) {
-        showAlert("Error connecting to server", "danger");
-      }
-    });
+      });
 
-    function showAlert(message, type) {
-      alertContainer.innerHTML = `
+      // Change password form submit
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (newPassword.value !== confirmNewPassword.value) {
+          showAlert("Passwords do not match!", "danger");
+          return;
+        }
+
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              currentPassword: currentPassword.value,
+              newPassword: newPassword.value,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showAlert("Password changed successfully!", "success");
+            form.reset();
+            passwordMatchMessage.textContent = "";
+          } else {
+            showAlert(data.message || "Failed to change password", "danger");
+          }
+        } catch (error) {
+          showAlert("Error connecting to server", "danger");
+        }
+      });
+
+      function showAlert(message, type) {
+        alertContainer.innerHTML = `
         <div class="alert alert-${type} alert-custom" role="alert">
           ${message}
         </div>
       `;
-      setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
-    }
-  </script>
+        setTimeout(() => {
+          alertContainer.innerHTML = "";
+        }, 5000);
+      }
 
-</body>
+      async function handlePasswordChanged() {
+        const modalEl = document.getElementById("passwordChangedModal");
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+
+        // Logout when modal is hidden (after close or timeout)
+        modalEl.addEventListener("hidden.bs.modal", async () => {
+          try {
+            await fetch(`${BASE_URL}/api/auth/logout`, {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch (err) {
+            console.error("Logout failed:", err);
+          }
+          window.location.href = "./studentLogin.html";
+        });
+      }
+    </script>
+  </body>
 </html>
