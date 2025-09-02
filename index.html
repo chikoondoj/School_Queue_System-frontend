@@ -8,81 +8,65 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-school"></i>
-                <h1>School Queue System</h1>
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-school"></i>
+            <span>School Queue</span>
+        </div>
+        <nav class="nav">
+            <a href="#home" class="nav-link active">Home</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+    </header>
 
-
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Welcome to Student Services</h1>
+            <p>Manage your requests easily with our smart digital queue system.</p>
+            <div class="cta-buttons">
+                <a href="studentLogin.html" class="btn btn-primary">
+                    <i class="fas fa-user-graduate"></i> Student Portal
+                </a>
+                <a href="adminLogin.html" class="btn btn-secondary">
+                    <i class="fas fa-user-shield"></i> Admin Portal
+                </a>
             </div>
-            <nav class="nav">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#about" class="nav-link">About</a>
-                <a href="#contact" class="nav-link">Contact</a>
-            </nav>
-        </header>
+        </section>
 
-        <main class="main-content">
-            <section class="hero">
-                <div class="hero-content">
-                    <h2>Welcome to Student Services</h2>
-                    <p>Efficiently manage your student service requests with our digital queue system</p>
-                    <div class="cta-buttons">
-                        <a href="studentLogin.html" class="btn btn-primary">
-                            <i class="fas fa-user-graduate"></i>
-                            Student Portal
-                        </a>
-                        <a href="adminLogin.html" class="btn btn-secondary">
-                            <i class="fas fa-user-shield"></i>
-                            Admin Portal
-                        </a>
-                    </div>
+        <!-- Services Section -->
+        <section class="services" id="services">
+            <h2>Available Services</h2>
+            <div class="service-grid">
+                <div class="service-card">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Student Admission</h3>
                 </div>
-                <div class="hero-image">
-                    <i class="fas fa-users fa-8x"></i>
+                <div class="service-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Course Registration</h3>
                 </div>
-            </section>
-
-            <section class="services-preview">
-                <h3>Available Services</h3>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <i class="fas fa-user-plus"></i>
-                        <h4>Student Admission</h4>
-                        <p>New student registration and admission processes</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-graduation-cap"></i>
-                        <h4>Student Registration</h4>
-                        <p>Course registration and academic planning</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-dollar-sign"></i>
-                        <h4>Financial Aid</h4>
-                        <p>Scholarships, grants, and financial assistance</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-comments"></i>
-                        <h4>Counseling</h4>
-                        <p>Academic and personal counseling services</p>
-                    </div>
+                <div class="service-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Financial Aid</h3>
                 </div>
-            </section>
-        </main>
-
-        <footer class="footer">
-            <div class="footer-content">
-                <p>&copy; 2024 School Queue System. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Service</a>
-                    <a href="#support">Support</a>
+                <div class="service-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Counseling</h3>
                 </div>
             </div>
-        </footer>
-    </div>
+        </section>
+    </main>
 
-    <script src="js/main.js"></script>
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 School Queue System. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms</a>
+            <a href="#support">Support</a>
+        </div>
+    </footer>
 </body>
 </html>
