@@ -310,10 +310,10 @@
             (ticket) => `
         <tr>
           <td>${ticket.ticketNumber || ticket.id}</td>
-          <td>${ticket.user_name || ticket.studentName || "--"}</td>
-          <td>${ticket.studentCode || ticket.userCode || "--"}</td>
+          <td>${ticket.user?.name || "--"}</td>
+          <td>${ticket.user?.studentCode || "--"}</td>
           <td>${
-            ticket.service_name || ticket.serviceType || ticket.serviceId
+            ticket.service?.name || ticket.serviceId
           }</td>
           <td>${ticket.position}</td>
           <td>
