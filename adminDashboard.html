@@ -1,186 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - School Queue System</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background-color: #f4f6f8;
-      font-family: 'Segoe UI', sans-serif;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - School Queue System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f4f6f8;
+        font-family: "Segoe UI", sans-serif;
+      }
 
-    .dashboard-header {
-      background: linear-gradient(135deg, #4e73df, #224abe);
-      color: white;
-      padding: 2rem 0;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+      .dashboard-header {
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        color: white;
+        padding: 2rem 0;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
 
-    .dashboard-header h1 {
-      font-weight: 600;
-      font-size: 1.8rem;
-    }
+      .dashboard-header h1 {
+        font-weight: 600;
+        font-size: 1.8rem;
+      }
 
-    .summary-card {
-      border-radius: 12px;
-      background: #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-      padding: 1.5rem;
-      text-align: center;
-      transition: transform 0.2s ease;
-    }
+      .summary-card {
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.2s ease;
+      }
 
-    .summary-card:hover {
-      transform: translateY(-4px);
-    }
+      .summary-card:hover {
+        transform: translateY(-4px);
+      }
 
-    .ticket-table th {
-      background-color: #f8f9fa;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-    }
+      .ticket-table th {
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+      }
 
-    .ticket-table td {
-      vertical-align: middle;
-    }
+      .ticket-table td {
+        vertical-align: middle;
+      }
 
-    .status-badge {
-      font-size: 0.85em;
-      padding: 0.4em 0.8em;
-      border-radius: 1em;
-    }
+      .status-badge {
+        font-size: 0.85em;
+        padding: 0.4em 0.8em;
+        border-radius: 1em;
+      }
 
-    .filters-container {
-      background: #ffffff;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      margin-bottom: 1.5rem;
-    }
+      .filters-container {
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+      }
 
-    .search-input {
-      border-radius: 30px;
-      padding-left: 40px;
-    }
+      .search-input {
+        border-radius: 30px;
+        padding-left: 40px;
+      }
 
-    .search-wrapper {
-      position: relative;
-    }
+      .search-wrapper {
+        position: relative;
+      }
 
-    .search-wrapper i {
-      position: absolute;
-      top: 50%;
-      left: 12px;
-      transform: translateY(-50%);
-      color: #6c757d;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div class="container">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">
-          <i class="fas fa-user-shield me-2"></i> Admin Dashboard
-        </h1>
-        <button class="btn btn-light btn-sm rounded-pill" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
+      .search-wrapper i {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="mb-0">
+            <i class="fas fa-user-shield me-2"></i> Admin Dashboard
+          </h1>
+          <button class="btn btn-light btn-sm rounded-pill" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+        <p class="mb-0 opacity-75" id="adminWelcome">Welcome, Admin!</p>
       </div>
-      <p class="mb-0 opacity-75" id="adminWelcome">Welcome, Admin!</p>
-    </div>
-  </div>
-
-  <div class="container mt-4">
-    <!-- Queue Summary -->
-    <div class="row mb-4" id="summaryRow">
-      <!-- Dynamic Summary Cards -->
     </div>
 
-    <!-- Filters Section -->
-    <div class="filters-container">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <select class="form-select" id="filterService" onchange="filterTickets()">
-            <option value="">All Services</option>
-            <!-- Dynamic options -->
-          </select>
-        </div>
-        <div class="col-md-4">
-          <select class="form-select" id="filterStatus" onchange="filterTickets()">
-            <option value="">All Statuses</option>
-            <option value="WAITING">Waiting</option>
-            <option value="CALLED">Called</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="CANCELLED">Cancelled</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <div class="search-wrapper">
-            <i class="fas fa-search"></i>
-            <input
-              type="text"
-              class="form-control search-input"
-              id="filterSearch"
-              placeholder="Search by student, code, or ticket..."
-              oninput="filterTickets()"
-            />
+    <div class="container mt-4">
+      <!-- Queue Summary -->
+      <div class="row mb-4" id="summaryRow">
+        <!-- Dynamic Summary Cards -->
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-container">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              id="filterService"
+              onchange="filterTickets()"
+            >
+              <option value="">All Services</option>
+              <!-- Dynamic options -->
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select
+              class="form-select"
+              id="filterStatus"
+              onchange="filterTickets()"
+            >
+              <option value="">All Statuses</option>
+              <option value="WAITING">Waiting</option>
+              <option value="CALLED">Called</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="search-wrapper">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                class="form-control search-input"
+                id="filterSearch"
+                placeholder="Search by student, code, or ticket..."
+                oninput="filterTickets()"
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tickets Table -->
-    <div class="card shadow-sm">
-      <div class="card-header d-flex justify-content-between align-items-center bg-white">
-        <h5 class="mb-0">
-          <i class="fas fa-ticket-alt me-2"></i> All Tickets
-        </h5>
-        <button class="btn btn-outline-primary btn-sm rounded-pill" onclick="refreshData()">
-          <i class="fas fa-sync-alt"></i> Refresh
-        </button>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table ticket-table mb-0 table-hover align-middle">
-            <thead>
-              <tr>
-                <th onclick="sortTable(1)">Student <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(2)">Student Code <i class="fas fa-sort"></i></th>
-                <th>Service</th>
-                <th>Position</th>
-                <th>Status</th>
-                <th>Created At</th>
-                <th>Called At</th>
-                <th>Completed At</th>
-              </tr>
-            </thead>
-            <tbody id="ticketTableBody">
-              <tr>
-                <td colspan="9" class="text-center text-muted py-4">
-                  <i class="fas fa-spinner fa-spin"></i> Loading tickets...
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- Tickets Table -->
+      <div class="card shadow-sm">
+        <div
+          class="card-header d-flex justify-content-between align-items-center bg-white"
+        >
+          <h5 class="mb-0">
+            <i class="fas fa-ticket-alt me-2"></i> All Tickets
+          </h5>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            onclick="refreshData()"
+          >
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table ticket-table mb-0 table-hover align-middle">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(1)">
+                    Student <i class="fas fa-sort"></i>
+                  </th>
+                  <th onclick="sortTable(2)">
+                    Student Code <i class="fas fa-sort"></i>
+                  </th>
+                  <th>Service</th>
+                  <th>Position</th>
+                  <th>Status</th>
+                  <th>Created At</th>
+                  <th>Called At</th>
+                  <th>Completed At</th>
+                </tr>
+              </thead>
+              <tbody id="ticketTableBody">
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-4">
+                    <i class="fas fa-spinner fa-spin"></i> Loading tickets...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      <div id="alertContainer" class="mt-3"></div>
     </div>
 
-    <div id="alertContainer" class="mt-3"></div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</html>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
@@ -189,6 +210,7 @@
       let tickets = [];
       let services = [];
       let summary = {};
+      let socket;
 
       document.addEventListener("DOMContentLoaded", () => {
         loadAdminDashboard();
@@ -277,17 +299,24 @@
         `;
       }
 
-      socket.on("queueUpdate", (data) => {
-        if (data.summary) renderSummary(data.summary); // update only summary cards
-        showAlert("info", "Queue updated in real-time.");
-      });
+      try {
+        if (typeof io !== "undefined") {
+          socket = io(BASE_URL); // assign to global variable
 
-      socket.on("ticketUpdate", (data) => {
-        if (data.summary) renderSummary(data.summary); // update summary cards
-        loadTickets(); // update ticket table
-        showAlert("info", "Ticket updated in real-time.");
-      });
+          socket.on("queueUpdate", (data) => {
+            if (data.summary) renderSummary(data.summary);
+            showAlert("info", "Queue updated in real-time.");
+          });
 
+          socket.on("ticketUpdate", (data) => {
+            if (data.summary) renderSummary(data.summary);
+            renderTickets(tickets); // or update only changed ticket
+            showAlert("info", "Ticket updated in real-time.");
+          });
+        }
+      } catch (e) {
+        console.error("Socket.io error:", e);
+      }
 
       function updateServiceFilter() {
         const select = document.getElementById("filterService");
@@ -321,9 +350,7 @@
         <tr>
           <td>${ticket.user?.name || "--"}</td>
           <td>${ticket.user?.studentCode || "--"}</td>
-          <td>${
-            ticket.service?.name || ticket.serviceId
-          }</td>
+          <td>${ticket.service?.name || ticket.serviceId}</td>
           <td>${ticket.position}</td>
           <td>
             <span class="badge status-badge bg-${statusColor(ticket.status)}">
@@ -375,9 +402,7 @@
           let matches = true;
           if (
             serviceName &&
-            !(
-              ticket.service?.name || ""
-            )
+            !(ticket.service?.name || "")
               .toLowerCase()
               .includes(serviceName.toLowerCase())
           )
@@ -390,12 +415,8 @@
           if (
             search &&
             !(
-              (ticket.user?.name || "")
-                .toLowerCase()
-                .includes(search) ||
-              (ticket.user?.studentCode || "")
-                .toLowerCase()
-                .includes(search)
+              (ticket.user?.name || "").toLowerCase().includes(search) ||
+              (ticket.user?.studentCode || "").toLowerCase().includes(search)
             )
           )
             matches = false;
