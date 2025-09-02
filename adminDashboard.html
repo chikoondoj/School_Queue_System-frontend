@@ -247,36 +247,48 @@
       function renderSummary(summary) {
         const row = document.getElementById("summaryRow");
         row.innerHTML = `
-        <div class="col-md-3 mb-3">
-          <div class="summary-card">
-            <div class="text-primary"><i class="fas fa-users fa-2x"></i></div>
-            <h2>${summary.total_waiting ?? "--"}</h2>
-            <small>Currently Waiting</small>
+          <div class="col-md-3 mb-3">
+            <div class="summary-card">
+              <div class="text-primary"><i class="fas fa-users fa-2x"></i></div>
+              <h2>${summary.total_waiting ?? "--"}</h2>
+              <small>Currently Waiting</small>
+            </div>
           </div>
-        </div>
-        <div class="col-md-3 mb-3">
-          <div class="summary-card">
-            <div class="text-success"><i class="fas fa-check-circle fa-2x"></i></div>
-            <h2>${summary.total_daily_tickets ?? "--"}</h2>
-            <small>Tickets Today</small>
+          <div class="col-md-3 mb-3">
+            <div class="summary-card">
+              <div class="text-success"><i class="fas fa-check-circle fa-2x"></i></div>
+              <h2>${summary.total_daily_tickets ?? "--"}</h2>
+              <small>Tickets Today</small>
+            </div>
           </div>
-        </div>
-        <div class="col-md-3 mb-3">
-          <div class="summary-card">
-            <div class="text-warning"><i class="fas fa-clock fa-2x"></i></div>
-            <h2>${Math.round(summary.overall_avg_service_time ?? 0)} min</h2>
-            <small>Avg. Service Time</small>
+          <div class="col-md-3 mb-3">
+            <div class="summary-card">
+              <div class="text-warning"><i class="fas fa-clock fa-2x"></i></div>
+              <h2>${Math.round(summary.overall_avg_service_time ?? 0)} min</h2>
+              <small>Avg. Service Time</small>
+            </div>
           </div>
-        </div>
-        <div class="col-md-3 mb-3">
-          <div class="summary-card">
-            <div class="text-info"><i class="fas fa-list fa-2x"></i></div>
-            <h2>${summary.total_services ?? "--"}</h2>
-            <small>Services</small>
+          <div class="col-md-3 mb-3">
+            <div class="summary-card">
+              <div class="text-info"><i class="fas fa-list fa-2x"></i></div>
+              <h2>${summary.total_services ?? "--"}</h2>
+              <small>Services</small>
+            </div>
           </div>
-        </div>
-      `;
+        `;
       }
+
+      socket.on("queueUpdate", (data) => {
+        if (data.summary) renderSummary(data.summary); // update only summary cards
+        showAlert("info", "Queue updated in real-time.");
+      });
+
+      socket.on("ticketUpdate", (data) => {
+        if (data.summary) renderSummary(data.summary); // update summary cards
+        loadTickets(); // update ticket table
+        showAlert("info", "Ticket updated in real-time.");
+      });
+
 
       function updateServiceFilter() {
         const select = document.getElementById("filterService");
