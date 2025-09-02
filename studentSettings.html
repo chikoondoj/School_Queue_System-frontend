@@ -112,7 +112,7 @@
 
       try {
         const response = await fetch(`${BASE_URL}/api/auth/change-password`, {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             // Include auth token if required
