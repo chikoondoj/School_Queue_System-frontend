@@ -151,6 +151,28 @@
         </div>
       </div>
 
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card service-card h-100">
+            <div class="card-body text-center">
+              <div class="service-icon text-secondary">
+                <i class="fas fa-cog"></i>
+              </div>
+              <h5 class="card-title">Settings</h5>
+              <p class="card-text">
+                Manage your account settings and password.
+              </p>
+              <a
+                href="studentSettings.html"
+                class="btn btn-join-queue text-white"
+              >
+                <i class="fas fa-arrow-right me-2"></i>Go to Settings
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Current Ticket Status -->
       <div id="currentTicketSection" style="display: none">
         <div class="row mb-4">
@@ -677,13 +699,16 @@
 
           showLoadingState("Leaving queue...");
 
-          const response = await sessionRequest(`/api/queue/leave/${currentTicket.id}`, {
-            method: "DELETE",
-            body: JSON.stringify({
-              ticketId: currentTicket.id,
-              serviceType: currentTicket.serviceType,
-            }),
-          });
+          const response = await sessionRequest(
+            `/api/queue/leave/${currentTicket.id}`,
+            {
+              method: "DELETE",
+              body: JSON.stringify({
+                ticketId: currentTicket.id,
+                serviceType: currentTicket.serviceType,
+              }),
+            }
+          );
 
           hideLoadingState();
 

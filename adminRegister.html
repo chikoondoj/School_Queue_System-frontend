@@ -3,6 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        connect-src 'self' https://school-queue-system-backend.onrender.com;
+        img-src 'self' data: blob: https:;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;"
+    />
+
     <title>Admin Registration - School Queue System</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
@@ -20,6 +32,7 @@
       }
       .registration-card {
         background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.13);
         overflow: hidden;
@@ -52,6 +65,10 @@
       .btn-primary:hover {
         background: linear-gradient(45deg, #414345, #232526);
         transform: translateY(-2px);
+      }
+      .btn-outline-dark {
+        border-radius: 10px;
+        padding: 10px 16px;
       }
       .input-group-text {
         background: #f8f9fa;
@@ -151,13 +168,6 @@
                         />
                       </div>
                     </div>
-                    <!-- <div class="col-md-6 mb-3">
-                                    <label for="adminCode" class="form-label">Admin Code *</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
-                                        <input type="text" class="form-control" id="adminCode" name="adminCode" placeholder="e.g. ADM2024001" required>
-                                    </div>
-                                </div> -->
                   </div>
                   <div class="mb-3">
                     <label for="email" class="form-label"
@@ -279,23 +289,37 @@
       </div>
     </div>
 
+    <!-- Modal for success -->
     <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Admin Registration Successful</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="copyBtn">Copy Code</button>
-        <button type="button" class="btn btn-primary" id="loginBtn">Go to Login</button>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Admin Registration Successful</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="modalBody"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="copyBtn">
+              Copy Code
+            </button>
+            <button type="button" class="btn btn-primary" id="loginBtn">
+              Go to Login
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="adminRegister.js"></script>
+  </body>
+</html>
+
     <script>
       const BASE_URL = "https://school-queue-system-backend.onrender.com";
       // Toggle password visibility

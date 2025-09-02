@@ -2,9 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ Content Security Policy -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        connect-src 'self' https://school-queue-system-backend.onrender.com;
+        img-src 'self' data: blob: https:;
+        script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;"
+    />
+
     <title>Student Registration - School Queue System</title>
+
+    <!-- ✅ External Styles -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
       rel="stylesheet"
@@ -13,380 +27,115 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+
     <style>
       body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 2rem 0;
-      }
-      .registration-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-      }
-      .registration-header {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-      }
-      .form-control,
-      .form-select {
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        padding: 12px 15px;
-        margin-bottom: 1rem;
-      }
-      .form-control:focus,
-      .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      }
-      .btn-primary {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        border: none;
-        border-radius: 10px;
-        padding: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .btn-primary:hover {
-        background: linear-gradient(45deg, #5a6fd8, #6a42a0);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-      .input-group-text {
-        background: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        border-radius: 10px 0 0 10px;
-      }
-      .input-group .form-control {
-        border-radius: 0 10px 10px 0;
-      }
-      .alert {
-        border-radius: 10px;
-        border: none;
-      }
-      .school-logo {
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
+        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem;
+        min-height: 100vh;
       }
-      .form-section {
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
+
+      .card {
+        border-radius: 12px;
       }
-      .section-title {
-        color: #667eea;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e0e0e0;
+
+      .card-header {
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+        font-size: 1.3rem;
       }
-      .password-strength {
-        height: 5px;
-        border-radius: 3px;
-        margin-top: 5px;
-        transition: all 0.3s ease;
+
+      .btn-primary {
+        background-color: #0d6efd;
+        border: none;
       }
-      .strength-weak {
-        background-color: #dc3545;
+
+      .btn-primary:hover {
+        background-color: #0b5ed7;
       }
-      .strength-medium {
-        background-color: #ffc107;
+
+      .form-text a {
+        color: #0d6efd;
+        text-decoration: none;
       }
-      .strength-strong {
-        background-color: #28a745;
+
+      .form-text a:hover {
+        text-decoration: underline;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
-          <div class="registration-card">
-            <!-- Header -->
-            <div class="registration-header">
-              <div class="school-logo">
-                <i class="fas fa-user-plus fa-2x"></i>
-              </div>
-              <h3 class="mb-2">Student Registration</h3>
-              <p class="mb-0 opacity-75">
-                Create your account to access queue services
-              </p>
+        <div class="col-md-6 col-lg-5">
+          <div class="card shadow">
+            <div class="card-header text-center">
+              Student Registration
             </div>
-
-            <!-- Registration Form -->
-            <div class="p-4">
-              <div id="alertContainer"></div>
-
+            <div class="card-body">
               <form id="registrationForm">
-                <!-- Personal Information Section -->
-                <div class="form-section">
-                  <h5 class="section-title">
-                    <i class="fas fa-user me-2"></i>Personal Information
-                  </h5>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <label for="studentName" class="form-label"
-                        >Full Name *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-user"></i>
-                        </span>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="studentName"
-                          name="studentName"
-                          placeholder="Enter your full name"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <!-- <div class="col-md-6">
-                      <label for="studentCode" class="form-label"
-                        >Student Code *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-id-card"></i>
-                        </span>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="studentCode"
-                          name="studentCode"
-                          placeholder="e.g., STU2024001"
-                          required
-                        />
-                      </div>
-                    </div> -->
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <label for="email" class="form-label"
-                        >Email Address *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-envelope"></i>
-                        </span>
-                        <input
-                          type="email"
-                          class="form-control"
-                          id="email"
-                          name="email"
-                          placeholder="your.email@example.com"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="phone" class="form-label">Phone Number</label>
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-phone"></i>
-                        </span>
-                        <input
-                          type="tel"
-                          class="form-control"
-                          id="phone"
-                          name="phone"
-                          placeholder="+1234567890"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Academic Information Section -->
-                <div class="form-section">
-                  <h5 class="section-title">
-                    <i class="fas fa-graduation-cap me-2"></i>Academic
-                    Information
-                  </h5>
-
-                  <div class="row">
-                    <div class="col-md-8">
-                      <label for="course" class="form-label"
-                        >Course/Program *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-book"></i>
-                        </span>
-                        <select
-                          class="form-select"
-                          id="course"
-                          name="course"
-                          required
-                        >
-                          <option value="">Select your course</option>
-                          <option value="Computer Science">
-                            Computer Science
-                          </option>
-                          <option value="Business Administration">
-                            Business Administration
-                          </option>
-                          <option value="Engineering">Engineering</option>
-                          <option value="Medicine">Medicine</option>
-                          <option value="Law">Law</option>
-                          <option value="Education">Education</option>
-                          <option value="Arts">Arts</option>
-                          <option value="Science">Science</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div class="col-md-4">
-                      <label for="year" class="form-label"
-                        >Academic Year *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-calendar-alt"></i>
-                        </span>
-                        <select
-                          class="form-select"
-                          id="year"
-                          name="year"
-                          required
-                        >
-                          <option value="">Year</option>
-                          <option value="1">1st Year</option>
-                          <option value="2">2nd Year</option>
-                          <option value="3">3rd Year</option>
-                          <option value="4">4th Year</option>
-                          <option value="5">5th Year</option>
-                          <option value="6">6th Year</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Security Section -->
-                <div class="form-section">
-                  <h5 class="section-title">
-                    <i class="fas fa-lock me-2"></i>Account Security
-                  </h5>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <label for="password" class="form-label"
-                        >Password *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-key"></i>
-                        </span>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="password"
-                          name="password"
-                          placeholder="Create a strong password"
-                          required
-                        />
-                        <button
-                          class="btn btn-outline-secondary"
-                          type="button"
-                          id="togglePassword"
-                        >
-                          <i class="fas fa-eye" id="eyeIcon"></i>
-                        </button>
-                      </div>
-                      <div
-                        class="password-strength"
-                        id="passwordStrength"
-                      ></div>
-                      <small class="text-muted"
-                        >Password must be at least 6 characters long</small
-                      >
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="confirmPassword" class="form-label"
-                        >Confirm Password *</label
-                      >
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="fas fa-check"></i>
-                        </span>
-                        <input
-                          type="password"
-                          class="form-control"
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          placeholder="Confirm your password"
-                          required
-                        />
-                      </div>
-                      <div id="passwordMatch" class="small mt-1"></div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Terms and Submit -->
-                <div class="form-check mb-4">
+                <div class="mb-3">
+                  <label for="studentName" class="form-label">Full Name</label>
                   <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="agreeTerms"
+                    type="text"
+                    id="studentName"
+                    name="name"
+                    class="form-control"
                     required
                   />
-                  <label class="form-check-label" for="agreeTerms">
-                    I agree to the
-                    <a href="#" class="text-decoration-none"
-                      >Terms of Service</a
-                    >
-                    and
-                    <a href="#" class="text-decoration-none">Privacy Policy</a>
-                  </label>
                 </div>
-
-                <button
-                  type="submit"
-                  class="btn btn-primary w-100 mb-3"
-                  id="registerBtn"
-                >
-                  <i class="fas fa-user-plus me-2"></i>
-                  Create Account
+                <div class="mb-3">
+                  <label for="studentEmail" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    id="studentEmail"
+                    name="email"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="studentCode" class="form-label">Student Code</label>
+                  <input
+                    type="text"
+                    id="studentCode"
+                    name="studentCode"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  Register
                 </button>
               </form>
-
-              <div class="text-center">
-                <p class="mb-0">Already have an account?</p>
-                <a href="studentLogin.html" class="btn btn-outline-primary">
-                  <i class="fas fa-sign-in-alt me-2"></i>
-                  Login Here
-                </a>
-              </div>
+              <p class="form-text text-center mt-3">
+                Already have an account? <a href="studentLogin.html">Login</a>
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- ✅ Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="StudentRegistration.js"></script>
+  </body>
+</html>
+
 
     <script>
       const BASE_URL = "https://school-queue-system-backend.onrender.com";
