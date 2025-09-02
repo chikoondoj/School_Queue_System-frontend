@@ -214,22 +214,30 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadAdminDashboard();
-        window.setInterval(loadAdminDashboard, 15000); // Auto-refresh every 15s
+        // window.setInterval(loadAdminDashboard, 15000); // Auto-refresh every 15s
 
         // Real-time updates via socket.io
         try {
           if (typeof io !== "undefined") {
-            const socket = io(BASE_URL);
+            socket = io(BASE_URL);
+
             socket.on("queueUpdate", (data) => {
-              loadAdminDashboard();
+              if (data.summary) renderSummary(data.summary);
               showAlert("info", "Queue updated in real-time.");
             });
+
             socket.on("ticketUpdate", (data) => {
-              loadAdminDashboard();
+              if (data.summary) renderSummary(data.summary);
+              if (data.tickets) {
+                tickets = data.tickets;
+                renderTickets(tickets);
+              }
               showAlert("info", "Ticket updated in real-time.");
             });
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error("Socket.io error:", e);
+        }
       });
 
       async function loadAdminDashboard() {
@@ -267,55 +275,50 @@
 
       function renderSummary(summary) {
         const row = document.getElementById("summaryRow");
-        row.innerHTML = `
-          <div class="col-md-3 mb-3">
-            <div class="summary-card">
-              <div class="text-primary"><i class="fas fa-users fa-2x"></i></div>
-              <h2>${summary.total_waiting ?? "--"}</h2>
-              <small>Currently Waiting</small>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="summary-card">
-              <div class="text-success"><i class="fas fa-check-circle fa-2x"></i></div>
-              <h2>${summary.total_daily_tickets ?? "--"}</h2>
-              <small>Tickets Today</small>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="summary-card">
-              <div class="text-warning"><i class="fas fa-clock fa-2x"></i></div>
-              <h2>${Math.round(summary.overall_avg_service_time ?? 0)} min</h2>
-              <small>Avg. Service Time</small>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="summary-card">
-              <div class="text-info"><i class="fas fa-list fa-2x"></i></div>
-              <h2>${summary.total_services ?? "--"}</h2>
-              <small>Services</small>
-            </div>
-          </div>
-        `;
-      }
 
-      try {
-        if (typeof io !== "undefined") {
-          socket = io(BASE_URL); // assign to global variable
-
-          socket.on("queueUpdate", (data) => {
-            if (data.summary) renderSummary(data.summary);
-            showAlert("info", "Queue updated in real-time.");
-          });
-
-          socket.on("ticketUpdate", (data) => {
-            if (data.summary) renderSummary(data.summary);
-            renderTickets(tickets); // or update only changed ticket
-            showAlert("info", "Ticket updated in real-time.");
-          });
+        // If cards exist, update them, else create them
+        if (row.children.length === 0) {
+          row.innerHTML = `
+      <div class="col-md-3 mb-3" id="cardWaiting">
+        <div class="summary-card">
+          <div class="text-primary"><i class="fas fa-users fa-2x"></i></div>
+          <h2>--</h2>
+          <small>Currently Waiting</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3" id="cardTicketsToday">
+        <div class="summary-card">
+          <div class="text-success"><i class="fas fa-check-circle fa-2x"></i></div>
+          <h2>--</h2>
+          <small>Tickets Today</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3" id="cardAvgService">
+        <div class="summary-card">
+          <div class="text-warning"><i class="fas fa-clock fa-2x"></i></div>
+          <h2>--</h2>
+          <small>Avg. Service Time</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3" id="cardServices">
+        <div class="summary-card">
+          <div class="text-info"><i class="fas fa-list fa-2x"></i></div>
+          <h2>--</h2>
+          <small>Services</small>
+        </div>
+      </div>
+    `;
         }
-      } catch (e) {
-        console.error("Socket.io error:", e);
+
+        // Update values dynamically
+        document.querySelector("#cardWaiting h2").textContent =
+          summary.total_waiting ?? "--";
+        document.querySelector("#cardTicketsToday h2").textContent =
+          summary.total_daily_tickets ?? "--";
+        document.querySelector("#cardAvgService h2").textContent =
+          Math.round(summary.overall_avg_service_time ?? 0) + " min";
+        document.querySelector("#cardServices h2").textContent =
+          summary.total_services ?? "--";
       }
 
       function updateServiceFilter() {
