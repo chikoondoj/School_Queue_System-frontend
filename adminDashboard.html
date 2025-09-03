@@ -347,7 +347,11 @@
                 "createAdminAlert"
               ).innerHTML = `<div class="alert alert-success">${
                 result.message || "Admin created!"
-              }</div>`;
+              }<br/>
+              <strong>Admin Code:</strong> ${
+                result.admin?.adminCode || result.admin?.id || ""
+              }
+                </div>`;
               form.reset();
             } catch (err) {
               document.getElementById(
@@ -413,7 +417,7 @@
           return;
 
         try {
-          console.log('Calling resetPassword for', studentCode);
+          console.log("Calling resetPassword for", studentCode);
 
           const res = await fetch(
             `${BASE_URL}/api/auth/reset-student-password`,
