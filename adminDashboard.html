@@ -359,27 +359,83 @@
 
       // ====== STUDENTS PAGE ======
       async function showStudents() {
-        document.getElementById(
-          "mainContent"
-        ).innerHTML = `<h2>Students</h2><div id="studentsContainer" class="mt-3">Loading...</div>`;
+        document.getElementById("mainContent").innerHTML = `
+    <h2>Students</h2>
+    <div id="studentsContainer" class="mt-3">Loading...</div>
+  `;
+
         try {
           const res = await fetch(`${BASE_URL}/api/auth/users`, {
             credentials: "include",
           });
           const data = await res.json();
           const students = data.users || [];
-          const html = `<table class="table table-hover"><thead><tr><th>Name</th><th>Email</th><th>Student Code</th></tr></thead>
-          <tbody>${students
+
+          const html = `
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Student Code</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${students
             .map(
-              (s) =>
-                `<tr><td>${s.name}</td><td>${s.email}</td><td>${s.studentCode}</td></tr>`
+              (s) => `
+                <tr>
+                  <td>${s.name}</td>
+                  <td>${s.email}</td>
+                  <td>${s.studentCode}</td>
+                  <td>
+                    <button class="btn btn-warning btn-sm" onclick="resetPassword('${s.id}')">
+                      Reset Password
+                    </button>
+                  </td>
+                </tr>`
             )
-            .join("")}</tbody></table>`;
+            .join("")}
+        </tbody>
+      </table>`;
+
           document.getElementById("studentsContainer").innerHTML = html;
         } catch (err) {
-          document.getElementById(
-            "studentsContainer"
-          ).innerHTML = `<div class="alert alert-danger">Failed to load students: ${err.message}</div>`;
+          document.getElementById("studentsContainer").innerHTML = `
+      <div class="alert alert-danger">Failed to load students: ${err.message}</div>
+    `;
+        }
+      }
+
+      async function resetPassword(studentId) {
+        if (!confirm("Are you sure you want to reset this student's password?"))
+          return;
+
+        try {
+          const res = await fetch(
+            `${BASE_URL}/api/auth/reset-student-password`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({ studentId }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("Password reset successfully!");
+          } else {
+            alert(
+              `Failed to reset password: ${data.message || "Unknown error"}`
+            );
+          }
+        } catch (err) {
+          alert(`Error: ${err.message}`);
         }
       }
 
