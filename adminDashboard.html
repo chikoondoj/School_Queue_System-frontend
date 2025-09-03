@@ -413,6 +413,8 @@
           return;
 
         try {
+          console.log('Calling resetPassword for', studentCode);
+
           const res = await fetch(
             `${BASE_URL}/api/auth/reset-student-password`,
             {
