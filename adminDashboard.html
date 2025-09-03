@@ -408,7 +408,7 @@
         }
       }
 
-      async function resetPassword(studentId) {
+      async function resetPassword(studentCode) {
         if (!confirm("Are you sure you want to reset this student's password?"))
           return;
 
@@ -421,7 +421,7 @@
                 "Content-Type": "application/json",
               },
               credentials: "include",
-              body: JSON.stringify({ studentId }),
+              body: JSON.stringify({ studentCode }),
             }
           );
 
