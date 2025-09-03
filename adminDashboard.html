@@ -348,9 +348,7 @@
               ).innerHTML = `<div class="alert alert-success">${
                 result.message || "Admin created!"
               }<br/>
-              <strong>Admin Code:</strong> ${
-                result.admin?.adminCode || result.admin?.id || ""
-              }
+              <strong>Admin Code:</strong> ${result.adminCode}
                 </div>`;
               form.reset();
             } catch (err) {
