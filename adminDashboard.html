@@ -206,7 +206,9 @@
             { credentials: "include" }
           );
           summary = await summaryRes.json();
-          renderSummary(summary);
+          requestAnimationFrame(() => {
+            renderSummary(summary);
+          });
 
           const ticketsRes = await fetch(`${BASE_URL}/api/tickets/all`, {
             credentials: "include",
@@ -365,7 +367,7 @@
             credentials: "include",
           });
           const data = await res.json();
-          const students = data.students || [];
+          const students = data.users || [];
           const html = `<table class="table table-hover"><thead><tr><th>Name</th><th>Email</th><th>Student Code</th></tr></thead>
           <tbody>${students
             .map(
