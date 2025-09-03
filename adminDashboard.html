@@ -343,18 +343,29 @@
                 body: JSON.stringify(data),
               });
               const result = await res.json();
-              document.getElementById(
-                "createAdminAlert"
-              ).innerHTML = `<div class="alert alert-success">${
-                result.message || "Admin created!"
-              }<br/>
-              <strong>Admin Code:</strong> ${result.adminCode}
-                </div>`;
-              form.reset();
+              if (res.ok) {
+                // Success alert
+                document.getElementById(
+                  "createAdminAlert"
+                ).innerHTML = `<div class="alert alert-success">
+          ${result.message || "Admin created!"} <br/>
+          <strong>Admin Code:</strong> ${result.adminCode || ""}
+        </div>`;
+                form.reset();
+              } else {
+                // Error alert
+                document.getElementById(
+                  "createAdminAlert"
+                ).innerHTML = `<div class="alert alert-danger">
+          Failed to create admin: ${result.message || "Unknown error"}
+        </div>`;
+              }
             } catch (err) {
               document.getElementById(
                 "createAdminAlert"
-              ).innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+              ).innerHTML = `<div class="alert alert-danger">
+        Network or server error: ${err.message}
+      </div>`;
             }
           });
       }
