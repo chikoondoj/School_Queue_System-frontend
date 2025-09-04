@@ -1,10 +1,10 @@
 const BASE_URL = "https://school-queue-system-backend.onrender.com";
-let clerkServiceId = null; // Set this dynamically after login
+let clerkServiceId = null; // Assigned service for this clerk
 
 document.addEventListener("DOMContentLoaded", () => {
   loadClerkInfo();
   refreshData();
-  setInterval(refreshData, 5000);
+  setInterval(refreshData, 5000); // Refresh every 5 seconds
 
   document
     .getElementById("changePasswordForm")
@@ -12,15 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadClerkInfo() {
-  const clerkName = localStorage.getItem("clerkName") || "Clerk";
-  clerkServiceId = localStorage.getItem("serviceId");
+  // Get clerk info from sessionStorage (set on login)
+  const clerkData = JSON.parse(sessionStorage.getItem("userData")) || {};
+  const clerkName = clerkData.name || "Clerk";
+  clerkServiceId = clerkData.serviceId; // You must store this when clerk logs in
   document.getElementById("clerkWelcome").textContent = `Welcome, ${clerkName}!`;
 }
 
 async function refreshData() {
   try {
-    const res = await fetch(`${BASE_URL}/api/tickets?serviceId=${clerkServiceId}`);
-    const tickets = await res.json();
+    // Fetch tickets for the clerk's assigned service
+    const res = await fetch(`${BASE_URL}/api/tickets?serviceId=${clerkServiceId}`, {
+      credentials: "include",
+    });
+    const data = await res.json();
+    const tickets = data.tickets || [];
 
     updateSummary(tickets);
     renderTickets(tickets);
@@ -31,7 +37,7 @@ async function refreshData() {
 
 function updateSummary(tickets) {
   const waiting = tickets.filter(t => t.status === "WAITING").length;
-  const current = tickets.find(t => t.status === "IN_PROGRESS")?.student?.name || "-";
+  const current = tickets.find(t => t.status === "IN_PROGRESS")?.user?.name || "-";
 
   document.getElementById("peopleInLine").textContent = waiting;
   document.getElementById("currentTicket").textContent = current;
@@ -41,7 +47,7 @@ function renderTickets(tickets) {
   const tbody = document.getElementById("ticketTableBody");
   tbody.innerHTML = "";
 
-  if (tickets.length === 0) {
+  if (!tickets || tickets.length === 0) {
     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No tickets found</td></tr>`;
     return;
   }
@@ -49,9 +55,9 @@ function renderTickets(tickets) {
   tickets.forEach(ticket => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${ticket.student?.name || "Unknown"}</td>
-      <td>${ticket.studentCode}</td>
-      <td>${ticket.service?.name}</td>
+      <td>${ticket.user?.name || "Unknown"}</td>
+      <td>${ticket.user?.studentCode || "--"}</td>
+      <td>${ticket.service?.name || ticket.serviceId}</td>
       <td><span class="badge bg-${getStatusColor(ticket.status)}">${ticket.status}</span></td>
       <td>${new Date(ticket.createdAt).toLocaleString()}</td>
       <td>
@@ -75,35 +81,37 @@ function getStatusColor(status) {
 
 function getActionButtons(ticket) {
   if (ticket.status === "WAITING") {
-    return `<button class="btn btn-success btn-sm action-btn" onclick="callNext(${ticket.id})"><i class="fas fa-bullhorn"></i></button>`;
+    return `<button class="btn btn-success btn-sm" onclick="callNext('${ticket.id}')"><i class="fas fa-bullhorn"></i></button>`;
   } else if (ticket.status === "CALLED") {
-    return `<button class="btn btn-warning btn-sm action-btn" onclick="markInProgress(${ticket.id})"><i class="fas fa-play"></i></button>`;
+    return `<button class="btn btn-warning btn-sm" onclick="markInProgress('${ticket.id}')"><i class="fas fa-play"></i></button>`;
   } else if (ticket.status === "IN_PROGRESS") {
-    return `<button class="btn btn-primary btn-sm action-btn" onclick="completeTicket(${ticket.id})"><i class="fas fa-check"></i></button>`;
+    return `<button class="btn btn-primary btn-sm" onclick="completeTicket('${ticket.id}')"><i class="fas fa-check"></i></button>`;
   }
-  return `<button class="btn btn-danger btn-sm action-btn" onclick="cancelTicket(${ticket.id})"><i class="fas fa-times"></i></button>`;
+  return `<button class="btn btn-danger btn-sm" onclick="cancelTicket('${ticket.id}')"><i class="fas fa-times"></i></button>`;
 }
 
+// Ticket actions
 async function callNext(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/call-next/${ticketId}`, { method: "PATCH" });
+  await fetch(`${BASE_URL}/api/tickets/call-next/${ticketId}`, { method: "PATCH", credentials: "include" });
   refreshData();
 }
 
 async function markInProgress(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/in-progress/${ticketId}`, { method: "PATCH" });
+  await fetch(`${BASE_URL}/api/tickets/in-progress/${ticketId}`, { method: "PATCH", credentials: "include" });
   refreshData();
 }
 
 async function completeTicket(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/complete/${ticketId}`, { method: "PATCH" });
+  await fetch(`${BASE_URL}/api/tickets/complete/${ticketId}`, { method: "PATCH", credentials: "include" });
   refreshData();
 }
 
 async function cancelTicket(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/cancel/${ticketId}`, { method: "PATCH" });
+  await fetch(`${BASE_URL}/api/tickets/cancel/${ticketId}`, { method: "PATCH", credentials: "include" });
   refreshData();
 }
 
+// Change password
 async function changePassword(e) {
   e.preventDefault();
   const oldPassword = document.getElementById("oldPassword").value;
@@ -112,6 +120,7 @@ async function changePassword(e) {
   const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ oldPassword, newPassword }),
   });
 
@@ -119,7 +128,8 @@ async function changePassword(e) {
   alert(data.message || "Password updated");
 }
 
+// Logout
 function logout() {
-  localStorage.clear();
-  window.location.href = "studentLogin.html";
+  sessionStorage.clear();
+  window.location.href = "studentLogin.html"; // Redirect to student login page
 }
