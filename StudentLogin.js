@@ -55,14 +55,14 @@ document
 
     const formData = new FormData(this);
     const loginData = {
-      identifier: formData.get("studentCode"),
+      identifier: formData.get("studentCode") || formData.get("email"), // support email for clerks
       password: formData.get("password"),
     };
 
     try {
       const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
-        credentials: "include", // Essential for session cookies
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -72,25 +72,29 @@ document
       const result = await response.json();
       console.log("Login response:", result);
 
-      if (result.success) {
+      if (result.success && result.user) {
         // Show success message
         showAlert("Login successful! Redirecting...", "success");
 
         // Store minimal user data in sessionStorage (optional)
-        if (result.user) {
-          sessionStorage.setItem(
-            "userData",
-            JSON.stringify({
-              name: result.user.name,
-              studentCode: result.user.studentCode,
-              role: result.user.role,
-            })
-          );
-        }
+        sessionStorage.setItem(
+          "userData",
+          JSON.stringify({
+            name: result.user.name,
+            studentCode: result.user.studentCode || null,
+            role: result.user.role,
+          })
+        );
 
-        // Redirect to student dashboard
+        // Redirect based on role
         setTimeout(() => {
-          window.location.href = "./studentDashboard.html";
+          switch (result.user.role) {
+            case "CLERK":
+              window.location.href = "./clerkDashboard.html";
+              break;
+            default:
+              window.location.href = "./studentDashboard.html";
+          }
         }, 1500);
       } else {
         showAlert(
@@ -107,6 +111,7 @@ document
       submitButton.disabled = false;
     }
   });
+
 
 function showAlert(message, type) {
   const alertContainer = document.getElementById("alertContainer");
