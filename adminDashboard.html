@@ -244,6 +244,7 @@
 
       function updateServiceFilter() {
         const select = document.getElementById("filterService");
+        if (!select) return;
         const current = select.value;
         select.innerHTML =
           `<option value="">All Services</option>` +
