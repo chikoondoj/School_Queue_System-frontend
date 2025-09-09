@@ -101,6 +101,9 @@
       <a href="#" onclick="showCreateAdmin()"
         ><i class="fas fa-user-shield me-2"></i> Create Admin</a
       >
+      <a href="#" onclick="showCreateClerk()">
+        <i class="fas fa-user-tie me-2"></i> Create Clerk
+      </a>
       <a href="#" onclick="showStudents()"
         ><i class="fas fa-user-graduate me-2"></i> Students</a
       >
@@ -368,6 +371,99 @@
       </div>`;
             }
           });
+      }
+
+      function showCreateClerk() {
+        document.getElementById("mainContent").innerHTML = `
+    <h2>Create Clerk</h2>
+    <form id="createClerkForm" class="mt-3">
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-control" name="name" required/>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" name="email" required/>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" required/>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Service</label>
+        <select class="form-select" name="serviceId" id="clerkServiceSelect" required>
+          <option value="">Select Service</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Create Clerk</button>
+    </form>
+    <div id="createClerkAlert" class="mt-3"></div>
+  `;
+
+        loadClerkServices();
+
+        document
+          .getElementById("createClerkForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+              name: form.name.value,
+              email: form.email.value,
+              password: form.password.value,
+              serviceId: form.serviceId.value,
+            };
+
+            try {
+              const res = await fetch(`${BASE_URL}/api/auth/clerk-register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(data),
+              });
+
+              const result = await res.json();
+
+              if (res.ok) {
+                document.getElementById(
+                  "createClerkAlert"
+                ).innerHTML = `<div class="alert alert-success">
+            ${result.message || "Clerk created successfully!"}
+          </div>`;
+                form.reset();
+              } else {
+                document.getElementById(
+                  "createClerkAlert"
+                ).innerHTML = `<div class="alert alert-danger">
+            Failed to create clerk: ${result.message || "Unknown error"}
+          </div>`;
+              }
+            } catch (err) {
+              document.getElementById(
+                "createClerkAlert"
+              ).innerHTML = `<div class="alert alert-danger">
+          Network or server error: ${err.message}
+        </div>`;
+            }
+          });
+      }
+
+      // Load services for the select dropdown
+      async function loadClerkServices() {
+        try {
+          const res = await fetch(`${BASE_URL}/api/queue/services/detailed`, {
+            credentials: "include",
+          });
+          const services = (await res.json()).services || [];
+          const select = document.getElementById("clerkServiceSelect");
+          select.innerHTML =
+            `<option value="">Select Service</option>` +
+            services
+              .map((s) => `<option value="${s.id}">${s.name}</option>`)
+              .join("");
+        } catch (err) {
+          console.error("Failed to load services:", err);
+        }
       }
 
       // ====== STUDENTS PAGE ======
