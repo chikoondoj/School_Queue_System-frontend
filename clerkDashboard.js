@@ -22,7 +22,7 @@ function loadClerkInfo() {
 async function refreshData() {
   try {
     // Fetch tickets for the clerk's assigned service
-    const res = await fetch(`${BASE_URL}/api/tickets?serviceId=${clerkServiceId}`, {
+    const res = await fetch(`${BASE_URL}/api/tickets/queue/${clerkServiceId}`, {
       credentials: "include",
     });
     const data = await res.json();
