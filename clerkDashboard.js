@@ -15,7 +15,7 @@ function loadClerkInfo() {
   // Get clerk info from sessionStorage (set on login)
   const clerkData = JSON.parse(sessionStorage.getItem("userData")) || {};
   const clerkName = clerkData.name || "Clerk";
-  clerkServiceId = clerkData.serviceId; // You must store this when clerk logs in
+  clerkServiceId = clerkData.serviceId;
   document.getElementById("clerkWelcome").textContent = `Welcome, ${clerkName}!`;
 }
 

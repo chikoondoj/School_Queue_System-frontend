@@ -83,6 +83,7 @@ document
             name: result.user.name,
             studentCode: result.user.studentCode || null,
             role: result.user.role,
+            serviceId: result.user.serviceId || null 
           })
         );
 
