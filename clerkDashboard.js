@@ -26,7 +26,7 @@ async function refreshData() {
       credentials: "include",
     });
     const data = await res.json();
-    const tickets = data.tickets || [];
+    const tickets = data.data || [];
 
     updateSummary(tickets);
     renderTickets(tickets);
