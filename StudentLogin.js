@@ -1,22 +1,4 @@
 const BASE_URL = "https://school-queue-system-backend.onrender.com";
-fetch(`${BASE_URL}/api/auth/profile`, {
-  method: "GET",
-  credentials: "include",
-  headers: {
-    "Content-Type": "application/json",
-  },
-})
-  .then((res) => {
-    if (!res.ok) throw new Error(`Status: ${res.status}`);
-    return res.json();
-  })
-  .then((data) => {
-    console.log("✅ Cookie test response:", data);
-  })
-  .catch((err) => {
-    console.error("❌ Cookie test failed:", err);
-  });
-
 
 // Toggle password visibility
 document
@@ -83,7 +65,7 @@ document
             name: result.user.name,
             studentCode: result.user.studentCode || null,
             role: result.user.role,
-            serviceId: result.user.serviceId || null 
+            serviceId: result.user.serviceId || null,
           })
         );
 
@@ -111,8 +93,25 @@ document
       submitButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
       submitButton.disabled = false;
     }
-  });
 
+    fetch(`${BASE_URL}/api/auth/profile`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("✅ Cookie test response:", data);
+      })
+      .catch((err) => {
+        console.error("❌ Cookie test failed:", err);
+      });
+  });
 
 function showAlert(message, type) {
   const alertContainer = document.getElementById("alertContainer");
