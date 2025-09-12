@@ -161,7 +161,7 @@ async function changePassword(e) {
 
     if (res.ok) {
       // Show success modal
-      const modalEl = document.getElementById("passwordChangedModal");
+      const modalEl = document.getElementById("changePasswordModal");
       const bsModal = new bootstrap.Modal(modalEl);
       bsModal.show();
 
