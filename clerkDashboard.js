@@ -149,11 +149,15 @@ async function changePassword(e) {
     return;
   }
 
+  submitButton.disabled = true;
+  const originalText = submitButton.innerHTML;
+  submitButton.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Updating...`;
+
   try {
     const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // important for cookies-based auth
+      credentials: "include",
       body: JSON.stringify({ currentPassword, newPassword }),
     });
 
@@ -184,6 +188,10 @@ async function changePassword(e) {
   } catch (err) {
     console.error("Change password error:", err);
     alert("An unexpected error occurred");
+  } finally {
+    // Reset button state
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalText;
   }
 }
 
