@@ -76,16 +76,6 @@
             <div class="card-body">
               <form id="registrationForm">
                 <div class="mb-3">
-                  <label for="studentName" class="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    id="studentName"
-                    name="name"
-                    class="form-control"
-                    required
-                  />
-                </div>
-                <div class="mb-3">
                   <label for="studentEmail" class="form-label">Email</label>
                   <input
                     type="email"
@@ -151,21 +141,18 @@
 
           const submitButton = form.querySelector("button[type='submit']");
 
-          // Get form data
+          // Collect form data
           const formData = new FormData(this);
-
           const registrationData = {
             name: formData.get("name"),
             email: formData.get("email"),
-            studentCode: formData.get("studentCode"),
             password: formData.get("password"),
           };
 
-          // Basic validation
+          // Validation
           if (
             !registrationData.name ||
             !registrationData.email ||
-            !registrationData.studentCode ||
             !registrationData.password
           ) {
             alert("Please fill in all fields!");
@@ -209,14 +196,6 @@
             }
           }
         });
-
-        // Format student code input
-        const studentCodeInput = document.getElementById("studentCode");
-        if (studentCodeInput) {
-          studentCodeInput.addEventListener("input", function () {
-            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-          });
-        }
       });
     </script>
   </body>
