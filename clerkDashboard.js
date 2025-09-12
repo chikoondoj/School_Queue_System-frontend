@@ -118,7 +118,7 @@ async function changePassword(e) {
   const newPassword = document.getElementById("newPassword").value;
 
   const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
-    method: "POST",
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({ oldPassword, newPassword }),
