@@ -187,7 +187,9 @@
             const result = await response.json();
 
             if (result.success) {
-              alert("Registration successful! Redirecting...");
+              alert(
+                `Registration successful!\nYour Student Code is: ${result.studentCode}\nRedirecting to login...`
+              );
               window.location.href = "studentLogin.html";
             } else {
               alert(result.message || "Registration failed!");
