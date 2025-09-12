@@ -121,7 +121,8 @@ async function changePassword(e) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({ oldPassword, newPassword }),
+    body: JSON.stringify({ currentPassword: currentPassword.value,
+              newPassword: newPassword.value, }),
   });
 
   const data = await res.json();
