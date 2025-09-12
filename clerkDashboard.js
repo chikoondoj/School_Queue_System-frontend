@@ -142,6 +142,7 @@ async function changePassword(e) {
   const newPassword = document.getElementById("newPassword").value;
   const confirmNewPassword =
     document.getElementById("confirmNewPassword").value;
+  const submitButton = e.target.querySelector("button[type='submit']");
 
   // Optional: Check if passwords match before sending
   if (newPassword !== confirmNewPassword) {
