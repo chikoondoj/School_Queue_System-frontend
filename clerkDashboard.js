@@ -16,7 +16,9 @@ function loadClerkInfo() {
   const clerkData = JSON.parse(sessionStorage.getItem("userData")) || {};
   const clerkName = clerkData.name || "Clerk";
   clerkServiceId = clerkData.serviceId;
-  document.getElementById("clerkWelcome").textContent = `Welcome, ${clerkName}!`;
+  document.getElementById(
+    "clerkWelcome"
+  ).textContent = `Welcome, ${clerkName}!`;
 }
 
 async function refreshData() {
@@ -36,8 +38,9 @@ async function refreshData() {
 }
 
 function updateSummary(tickets) {
-  const waiting = tickets.filter(t => t.status === "WAITING").length;
-  const current = tickets.find(t => t.status === "IN_PROGRESS")?.user?.name || "-";
+  const waiting = tickets.filter((t) => t.status === "WAITING").length;
+  const current =
+    tickets.find((t) => t.status === "IN_PROGRESS")?.user?.name || "-";
 
   document.getElementById("peopleInLine").textContent = waiting;
   document.getElementById("currentTicket").textContent = current;
@@ -52,13 +55,15 @@ function renderTickets(tickets) {
     return;
   }
 
-  tickets.forEach(ticket => {
+  tickets.forEach((ticket) => {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${ticket.user?.name || "Unknown"}</td>
       <td>${ticket.user?.studentCode || "--"}</td>
       <td>${ticket.service?.name || ticket.serviceId}</td>
-      <td><span class="badge bg-${getStatusColor(ticket.status)}">${ticket.status}</span></td>
+      <td><span class="badge bg-${getStatusColor(ticket.status)}">${
+      ticket.status
+    }</span></td>
       <td>${new Date(ticket.createdAt).toLocaleString()}</td>
       <td>
         ${getActionButtons(ticket)}
@@ -70,12 +75,18 @@ function renderTickets(tickets) {
 
 function getStatusColor(status) {
   switch (status) {
-    case "WAITING": return "secondary";
-    case "CALLED": return "info";
-    case "IN_PROGRESS": return "warning";
-    case "COMPLETED": return "success";
-    case "CANCELLED": return "danger";
-    default: return "dark";
+    case "WAITING":
+      return "secondary";
+    case "CALLED":
+      return "info";
+    case "IN_PROGRESS":
+      return "warning";
+    case "COMPLETED":
+      return "success";
+    case "CANCELLED":
+      return "danger";
+    default:
+      return "dark";
   }
 }
 
@@ -92,41 +103,88 @@ function getActionButtons(ticket) {
 
 // Ticket actions
 async function callNext(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/call-next/${ticketId}`, { method: "PATCH", credentials: "include" });
+  await fetch(`${BASE_URL}/api/tickets/call-next/${ticketId}`, {
+    method: "PATCH",
+    credentials: "include",
+  });
   refreshData();
 }
 
 async function markInProgress(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/in-progress/${ticketId}`, { method: "PATCH", credentials: "include" });
+  await fetch(`${BASE_URL}/api/tickets/in-progress/${ticketId}`, {
+    method: "PATCH",
+    credentials: "include",
+  });
   refreshData();
 }
 
 async function completeTicket(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/complete/${ticketId}`, { method: "PATCH", credentials: "include" });
+  await fetch(`${BASE_URL}/api/tickets/complete/${ticketId}`, {
+    method: "PATCH",
+    credentials: "include",
+  });
   refreshData();
 }
 
 async function cancelTicket(ticketId) {
-  await fetch(`${BASE_URL}/api/tickets/cancel/${ticketId}`, { method: "PATCH", credentials: "include" });
+  await fetch(`${BASE_URL}/api/tickets/cancel/${ticketId}`, {
+    method: "PATCH",
+    credentials: "include",
+  });
   refreshData();
 }
 
 // Change password
 async function changePassword(e) {
   e.preventDefault();
-  const oldPassword = document.getElementById("oldPassword").value;
+
+  const currentPassword = document.getElementById("currentPassword").value;
   const newPassword = document.getElementById("newPassword").value;
+  const confirmNewPassword =
+    document.getElementById("confirmNewPassword").value;
 
-  const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ currentPassword: currentPassword.value,
-              newPassword: newPassword.value, }),
-  });
+  // Optional: Check if passwords match before sending
+  if (newPassword !== confirmNewPassword) {
+    alert("New password and confirmation do not match");
+    return;
+  }
 
-  const data = await res.json();
-  alert(data.message || "Password updated");
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/change-password`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include", // important for cookies-based auth
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Show success modal
+      const modalEl = document.getElementById("passwordChangedModal");
+      const bsModal = new bootstrap.Modal(modalEl);
+      bsModal.show();
+
+      // Logout when modal closes
+      modalEl.addEventListener("hidden.bs.modal", async () => {
+        try {
+          await fetch(`${BASE_URL}/api/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
+        window.location.href = "./studentLogin.html";
+      });
+    } else {
+      // Show error message
+      alert(data.message || "Failed to change password");
+    }
+  } catch (err) {
+    console.error("Change password error:", err);
+    alert("An unexpected error occurred");
+  }
 }
 
 // Logout
