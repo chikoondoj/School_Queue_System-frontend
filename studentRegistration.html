@@ -72,9 +72,7 @@
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
           <div class="card shadow">
-            <div class="card-header text-center">
-              Student Registration
-            </div>
+            <div class="card-header text-center">Student Registration</div>
             <div class="card-body">
               <form id="registrationForm">
                 <div class="mb-3">
@@ -98,7 +96,9 @@
                   />
                 </div>
                 <div class="mb-3">
-                  <label for="studentCode" class="form-label">Student Code</label>
+                  <label for="studentCode" class="form-label"
+                    >Student Code</label
+                  >
                   <input
                     type="text"
                     id="studentCode"
@@ -133,327 +133,91 @@
     <!-- ✅ Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <!-- <script src="StudentRegistration.js"></script> -->
-  
-
 
     <script>
       const BASE_URL = "https://school-queue-system-backend.onrender.com";
-      // Toggle password visibility
-      document
-        .getElementById("togglePassword")
-        .addEventListener("click", function () {
-          const passwordInput = document.getElementById("password");
-          const eyeIcon = document.getElementById("eyeIcon");
 
-          if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-          } else {
-            passwordInput.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
-          }
-        });
-
-      // Password strength checker
-      document
-        .getElementById("password")
-        .addEventListener("input", function () {
-          const password = this.value;
-          const strengthBar = document.getElementById("passwordStrength");
-
-          let strength = 0;
-          if (password.length >= 6) strength++;
-          if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
-          if (password.match(/[0-9]/)) strength++;
-          if (password.match(/[^a-zA-Z0-9]/)) strength++;
-
-          strengthBar.className = "password-strength";
-          if (strength === 0) {
-            strengthBar.style.width = "0%";
-          } else if (strength <= 2) {
-            strengthBar.classList.add("strength-weak");
-            strengthBar.style.width = "33%";
-          } else if (strength === 3) {
-            strengthBar.classList.add("strength-medium");
-            strengthBar.style.width = "66%";
-          } else {
-            strengthBar.classList.add("strength-strong");
-            strengthBar.style.width = "100%";
-          }
-        });
-
-      // Password match checker
-      document
-        .getElementById("confirmPassword")
-        .addEventListener("input", function () {
-          const password = document.getElementById("password").value;
-          const confirmPassword = this.value;
-          const matchDiv = document.getElementById("passwordMatch");
-
-          if (confirmPassword === "") {
-            matchDiv.innerHTML = "";
-            this.classList.remove("is-valid", "is-invalid");
-          } else if (password === confirmPassword) {
-            matchDiv.innerHTML =
-              '<i class="fas fa-check text-success"></i> Passwords match';
-            this.classList.remove("is-invalid");
-            this.classList.add("is-valid");
-          } else {
-            matchDiv.innerHTML =
-              '<i class="fas fa-times text-danger"></i> Passwords do not match';
-            this.classList.remove("is-valid");
-            this.classList.add("is-invalid");
-          }
-        });
-
-      // Handle form submission
-      // Handle form submission - Make sure this runs after DOM is loaded
       document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("registrationForm");
-        if (form) {
-          form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            alert("Form submission intercepted by JavaScript!");
-            console.log("JavaScript form handler working!");
-          });
-        } else {
+
+        if (!form) {
           console.error("Form not found!");
+          return;
         }
 
-        document
-          .getElementById("registrationForm")
-          .addEventListener("submit", async function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          e.stopPropagation();
 
-            const submitButton = document.getElementById("registerBtn");
-            const alertContainer = document.getElementById("alertContainer");
+          const submitButton = form.querySelector("button[type='submit']");
 
-            // Clear previous alerts
-            alertContainer.innerHTML = "";
+          // Get form data
+          const formData = new FormData(this);
 
-            // Get form data with detailed logging
-            const formData = new FormData(this);
+          const registrationData = {
+            name: formData.get("name"),
+            email: formData.get("email"),
+            studentCode: formData.get("studentCode"),
+            password: formData.get("password"),
+          };
 
-            console.log("FormData entries:");
-            for (let [key, value] of formData.entries()) {
-              console.log(`${key}: ${value}`);
-            }
-
-            // Validate passwords match
-            const password = document.getElementById("password").value;
-            const confirmPassword =
-              document.getElementById("confirmPassword").value;
-
-            console.log("Password validation:", {
-              passwordLength: password.length,
-              confirmPasswordLength: confirmPassword.length,
-              passwordsMatch: password === confirmPassword,
-            });
-
-            if (password !== confirmPassword) {
-              showAlert("Passwords do not match!", "danger");
-              return;
-            }
-
-            if (password.length < 6) {
-              showAlert(
-                "Password must be at least 6 characters long!",
-                "danger"
-              );
-              return;
-            }
-
-            // Show loading state
-            submitButton.innerHTML =
-              '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
-            submitButton.disabled = true;
-
-            // Build registration data object
-            const registrationData = {
-              name: formData.get("studentName"),
-              // studentCode: formData.get("studentCode"),
-              email: formData.get("email"),
-              phone: formData.get("phone"),
-              course: formData.get("course"),
-              year: parseInt(formData.get("year")),
-              password: formData.get("password"),
-            };
-
-            console.log("Registration data object:", {
-              ...registrationData,
-              password: "***", // Hide password in logs
-            });
-
-            // Validate that all required fields are present
-            const requiredFields = [
-              "name",
-              // "studentCode",
-              "course",
-              "year",
-              "password",
-            ];
-            const missingFields = requiredFields.filter(
-              (field) => !registrationData[field]
-            );
-
-            if (missingFields.length > 0) {
-              console.error("Missing required fields:", missingFields);
-              showAlert(
-                `Missing required fields: ${missingFields.join(", ")}`,
-                "danger"
-              );
-
-              // Reset button state
-              submitButton.innerHTML =
-                '<i class="fas fa-user-plus me-2"></i>Create Account';
-              submitButton.disabled = false;
-              return;
-            }
-
-            // Convert to JSON and log the exact payload
-            const jsonPayload = JSON.stringify(registrationData);
-            console.log("JSON payload length:", jsonPayload.length);
-            console.log("JSON payload:", jsonPayload);
-
-            // Validate JSON
-            try {
-              JSON.parse(jsonPayload);
-              console.log("JSON is valid");
-            } catch (jsonError) {
-              console.error("JSON validation failed:", jsonError);
-              showAlert("Invalid data format. Please try again.", "danger");
-
-              // Reset button state
-              submitButton.innerHTML =
-                '<i class="fas fa-user-plus me-2"></i>Create Account';
-              submitButton.disabled = false;
-              return;
-            }
-
-            try {
-              // console.log('Sending request to:', '${BASE_URL}/api/auth/register');
-
-              const response = await fetch(`${BASE_URL}/api/auth/register`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: jsonPayload,
-              });
-
-              console.log("Response status:", response.status);
-              console.log(
-                "Response headers:",
-                Object.fromEntries(response.headers.entries())
-              );
-
-              // Get response text first to handle potential JSON parsing errors
-              const responseText = await response.text();
-              console.log("Raw response text:", responseText);
-
-              let result;
-              try {
-                result = JSON.parse(responseText);
-                console.log("Parsed response:", result);
-              } catch (parseError) {
-                console.error("Failed to parse response as JSON:", parseError);
-                showAlert("Server response was not valid JSON", "danger");
-                return;
-              }
-
-              if (result.success) {
-                console.log("Registration successful!");
-                showAlert(
-                  "Registration successful! Redirecting to login...",
-                  "success"
-                );
-
-                setTimeout(() => {
-                  console.log("Redirecting to login page...");
-                  window.location.href = "./studentLogin.html";
-                }, 2000);
-              } else {
-                console.log("Registration failed:", result.message);
-                showAlert(
-                  result.message || "Registration failed. Please try again.",
-                  "danger"
-                );
-              }
-            } catch (error) {
-              console.error("Fetch error details:", {
-                name: error.name,
-                message: error.message,
-                stack: error.stack,
-              });
-              showAlert(
-                "Network error. Please check your connection and try again.",
-                "danger"
-              );
-            } finally {
-              // Reset button state
-              submitButton.innerHTML =
-                '<i class="fas fa-user-plus me-2"></i>Create Account';
-              submitButton.disabled = false;
-            }
-          });
-      });
-
-      // Helper function for alerts (make sure this exists)
-      function showAlert(message, type) {
-        const alertContainer = document.getElementById("alertContainer");
-        const alertHtml = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `;
-        alertContainer.innerHTML = alertHtml;
-
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => {
-          const alert = alertContainer.querySelector(".alert");
-          if (alert) {
-            alert.classList.remove("show");
-            setTimeout(() => alert.remove(), 150);
+          // Basic validation
+          if (
+            !registrationData.name ||
+            !registrationData.email ||
+            !registrationData.studentCode ||
+            !registrationData.password
+          ) {
+            alert("Please fill in all fields!");
+            return;
           }
-        }, 5000);
-      }
-      function showAlert(message, type) {
-        const alertContainer = document.getElementById("alertContainer");
-        const alertHtml = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                    <i class="fas fa-${
-                      type === "success" ? "check-circle" : "exclamation-circle"
-                    } me-2"></i>
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-        alertContainer.innerHTML = alertHtml;
 
-        // Scroll to top to show alert
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+          if (registrationData.password.length < 6) {
+            alert("Password must be at least 6 characters!");
+            return;
+          }
 
-      // Clear form validation on input
-      document.querySelectorAll("input, select").forEach((input) => {
-        input.addEventListener("input", function () {
-          this.classList.remove("is-invalid");
+          // Loading state
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Registering...";
+          }
+
+          try {
+            const response = await fetch(`${BASE_URL}/api/auth/register`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(registrationData),
+            });
+
+            const result = await response.json();
+            console.log("Server response:", result);
+
+            if (result.success) {
+              alert("Registration successful! Redirecting to login...");
+              window.location.href = "./studentLogin.html";
+            } else {
+              alert(result.message || "Registration failed. Try again.");
+            }
+          } catch (error) {
+            console.error("Network error:", error);
+            alert("Network error. Please try again.");
+          } finally {
+            if (submitButton) {
+              submitButton.disabled = false;
+              submitButton.textContent = "Register";
+            }
+          }
         });
+
+        // Format student code input
+        const studentCodeInput = document.getElementById("studentCode");
+        if (studentCodeInput) {
+          studentCodeInput.addEventListener("input", function () {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+          });
+        }
       });
-
-      // Student code formatting
-      document
-        .getElementById("studentCode")
-        .addEventListener("input", function () {
-          let value = this.value.toUpperCase();
-          // Remove any non-alphanumeric characters
-          value = value.replace(/[^A-Z0-9]/g, "");
-          this.value = value;
-        });
     </script>
   </body>
 </html>
