@@ -135,6 +135,7 @@ async function cancelTicket(ticketId) {
 }
 
 // Change password
+// Change password
 async function changePassword(e) {
   e.preventDefault();
 
@@ -144,7 +145,6 @@ async function changePassword(e) {
     document.getElementById("confirmNewPassword").value;
   const submitButton = e.target.querySelector("button[type='submit']");
 
-  // Optional: Check if passwords match before sending
   if (newPassword !== confirmNewPassword) {
     alert("New password and confirmation do not match");
     return;
@@ -165,36 +165,44 @@ async function changePassword(e) {
     const data = await res.json();
 
     if (res.ok) {
-      // Show success modal
-      const modalEl = document.getElementById("changePasswordModal");
-      const bsModal = new bootstrap.Modal(modalEl);
-      bsModal.show();
+      // Hide the change password modal
+      const changeModalEl = document.getElementById("changePasswordModal");
+      const changeModal = bootstrap.Modal.getInstance(changeModalEl);
+      changeModal.hide();
 
-      // Logout when modal closes
-      modalEl.addEventListener("hidden.bs.modal", async () => {
-        try {
-          await fetch(`${BASE_URL}/api/auth/logout`, {
-            method: "POST",
-            credentials: "include",
-          });
-        } catch (err) {
-          console.error("Logout failed:", err);
-        }
-        window.location.href = "./studentLogin.html";
-      });
+      // Show success modal
+      const successEl = document.getElementById("successModal");
+      const successModal = new bootstrap.Modal(successEl);
+      successModal.show();
+
+      // Logout when success modal closes
+      successEl.addEventListener(
+        "hidden.bs.modal",
+        async () => {
+          try {
+            await fetch(`${BASE_URL}/api/auth/logout`, {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch (err) {
+            console.error("Logout failed:", err);
+          }
+          window.location.href = "./studentLogin.html";
+        },
+        { once: true }
+      );
     } else {
-      // Show error message
       alert(data.message || "Failed to change password");
     }
   } catch (err) {
     console.error("Change password error:", err);
     alert("An unexpected error occurred");
   } finally {
-    // Reset button state
     submitButton.disabled = false;
     submitButton.innerHTML = originalText;
   }
 }
+
 
 // Logout
 function logout() {
