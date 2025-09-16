@@ -705,25 +705,32 @@
       }
 
       async function refreshQueueStats() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/queue/stats`, {
-      credentials: "include",
-    });
-    const data = await res.json();
+        try {
+          const res = await fetch(`${BASE_URL}/api/queue/stats`, {
+            credentials: "include",
+          });
+          const data = await res.json();
 
-    if (!data.success) return console.error(data.message);
+          if (!data.success) {
+            console.error(data.message);
+            return;
+          }
 
-    data.stats.forEach((service) => {
-      // Map serviceName to card element ID
-      const cardId = service.serviceName.toLowerCase().replace(/\s+/g, "") + "Queue";
-      const element = document.getElementById(cardId);
-      if (element) element.textContent = service.waiting + service.inProgress; // or total tickets
-    });
-  } catch (err) {
-    console.error("Error refreshing queue stats:", err);
-  }
-}
+          data.stats.forEach((service) => {
+            // Convert service name to the corresponding card element ID
+            const cardId =
+              service.serviceName.toLowerCase().replace(/\s+/g, "") + "Queue";
 
+            const element = document.getElementById(cardId);
+            if (element) {
+              // Update with the number of people currently in line
+              element.textContent = service.waiting + service.inProgress;
+            }
+          });
+        } catch (err) {
+          console.error("Error refreshing queue stats:", err);
+        }
+      }
 
       // Enhanced join queue function with better feedback
       async function joinQueue(serviceType) {
