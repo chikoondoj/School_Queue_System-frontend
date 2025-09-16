@@ -592,7 +592,7 @@
           }
         }
       }
-      
+
       document.addEventListener("DOMContentLoaded", () => {
         refreshQueueStats();
         setInterval(refreshQueueStats, 5000); // refresh every 5 seconds
@@ -705,45 +705,25 @@
       }
 
       async function refreshQueueStats() {
-        try {
-          const res = await fetch(`${BASE_URL}/api/queue/stats`, {
-            credentials: "include",
-          });
-          const data = await res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/api/queue/stats`, {
+      credentials: "include",
+    });
+    const data = await res.json();
 
-          if (!data.success) {
-            console.error("Failed to fetch queue stats:", data.message);
-            return;
-          }
+    if (!data.success) return console.error(data.message);
 
-          const stats = data.stats; // array of service stats
+    data.stats.forEach((service) => {
+      // Map serviceName to card element ID
+      const cardId = service.serviceName.toLowerCase().replace(/\s+/g, "") + "Queue";
+      const element = document.getElementById(cardId);
+      if (element) element.textContent = service.waiting + service.inProgress; // or total tickets
+    });
+  } catch (err) {
+    console.error("Error refreshing queue stats:", err);
+  }
+}
 
-          stats.forEach((service) => {
-            switch (service.name) {
-              case "Student Admission":
-                document.getElementById("admissionQueue").textContent =
-                  service.waiting;
-                break;
-              case "Student Registration":
-                document.getElementById("registrationQueue").textContent =
-                  service.waiting;
-                break;
-              case "Financial Aid":
-                document.getElementById("financialQueue").textContent =
-                  service.waiting;
-                break;
-              case "Counseling":
-                document.getElementById("counselingQueue").textContent =
-                  service.waiting;
-                break;
-              default:
-                console.warn("Unknown service:", service.name);
-            }
-          });
-        } catch (error) {
-          console.error("Error refreshing queue stats:", error);
-        }
-      }
 
       // Enhanced join queue function with better feedback
       async function joinQueue(serviceType) {
