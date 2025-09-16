@@ -854,11 +854,14 @@
   `;
         document.getElementById("leaveQueueMessage").innerHTML = message;
 
-        // Show the modal
-        const modal = new bootstrap.Modal(
-          document.getElementById("leaveQueueModal")
-        );
-        modal.show();
+        const modalElement = document.getElementById("leaveQueueModal");
+        const modalInstance = new bootstrap.Modal(modalElement, {
+          backdrop: "static",
+        });
+        modalInstance.show();
+
+        // Save instance on element so we can hide it later
+        modalElement.modalInstance = modalInstance;
       }
 
       // Real-time queue updates
