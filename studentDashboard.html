@@ -699,6 +699,32 @@
         }
       }
 
+      async function refreshQueueStats() {
+        try {
+          const response = await sessionRequest("/api/queue/stats", {
+            method: "GET",
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to get queue stats: ${response.status}`);
+          }
+
+          const stats = await response.json();
+
+          // Update queue counts on the UI
+          document.getElementById("admissionQueue").textContent =
+            stats["Student Admission"] || 0;
+          document.getElementById("registrationQueue").textContent =
+            stats["Student Registration"] || 0;
+          document.getElementById("financialQueue").textContent =
+            stats["Financial Aid"] || 0;
+          document.getElementById("counselingQueue").textContent =
+            stats["Counseling"] || 0;
+        } catch (error) {
+          console.error("Error refreshing queue stats:", error);
+        }
+      }
+
       // Enhanced join queue function with better feedback
       async function joinQueue(serviceType) {
         try {
@@ -741,6 +767,15 @@
             currentTicket = result.ticket;
             displayEnhancedCurrentTicket();
 
+            // Scroll smoothly to current ticket
+            const ticketSection = document.getElementById(
+              "currentTicketSection"
+            );
+            ticketSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+
             // Show success with estimated wait time
             const waitTimeMsg = result.estimatedWaitTime
               ? ` Estimated wait: ${result.estimatedWaitTime} minutes.`
@@ -749,8 +784,8 @@
             showAlert(
               "success",
               `✅ Joined ${serviceType} queue successfully!<br>
-                        📍 Position: ${result.ticket.position}<br>
-                        🎫 Ticket: ${result.ticket.ticketNumber}${waitTimeMsg}`
+         📍 Position: ${result.ticket.position}<br>
+         🎫 Ticket: ${result.ticket.ticketNumber}${waitTimeMsg}`
             );
 
             // Emit socket event for real-time updates
@@ -831,10 +866,7 @@
             currentTicket = null;
             hideCurrentTicket();
 
-            showAlert(
-              "info",
-              `✅ You left the <strong>${leftServiceType}</strong> queue (Ticket #${leftTicketNum}) successfully.`
-            );
+            showAlert("info", `✅ You left the queue successfully.`);
 
             // Emit socket event for real-time updates
             socket.emit("studentLeftQueue", { serviceType: leftServiceType });
