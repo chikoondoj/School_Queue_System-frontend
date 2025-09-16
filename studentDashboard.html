@@ -592,6 +592,11 @@
           }
         }
       }
+      
+      document.addEventListener("DOMContentLoaded", () => {
+        refreshQueueStats();
+        setInterval(refreshQueueStats, 5000); // refresh every 5 seconds
+      });
 
       // Load student profile from server (validates session)
       async function loadStudentProfile() {
@@ -701,25 +706,40 @@
 
       async function refreshQueueStats() {
         try {
-          const response = await sessionRequest("/api/queue/stats", {
-            method: "GET",
+          const res = await fetch(`${BASE_URL}/api/queue/stats`, {
+            credentials: "include",
           });
+          const data = await res.json();
 
-          if (!response.ok) {
-            throw new Error(`Failed to get queue stats: ${response.status}`);
+          if (!data.success) {
+            console.error("Failed to fetch queue stats:", data.message);
+            return;
           }
 
-          const stats = await response.json();
+          const stats = data.stats; // array of service stats
 
-          // Update queue counts on the UI
-          document.getElementById("admissionQueue").textContent =
-            stats["Student Admission"] || 0;
-          document.getElementById("registrationQueue").textContent =
-            stats["Student Registration"] || 0;
-          document.getElementById("financialQueue").textContent =
-            stats["Financial Aid"] || 0;
-          document.getElementById("counselingQueue").textContent =
-            stats["Counseling"] || 0;
+          stats.forEach((service) => {
+            switch (service.name) {
+              case "Student Admission":
+                document.getElementById("admissionQueue").textContent =
+                  service.waiting;
+                break;
+              case "Student Registration":
+                document.getElementById("registrationQueue").textContent =
+                  service.waiting;
+                break;
+              case "Financial Aid":
+                document.getElementById("financialQueue").textContent =
+                  service.waiting;
+                break;
+              case "Counseling":
+                document.getElementById("counselingQueue").textContent =
+                  service.waiting;
+                break;
+              default:
+                console.warn("Unknown service:", service.name);
+            }
+          });
         } catch (error) {
           console.error("Error refreshing queue stats:", error);
         }
