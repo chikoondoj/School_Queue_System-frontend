@@ -798,12 +798,19 @@
       }
 
       async function processLeaveQueue() {
+        if (!currentTicket) {
+          showAlert("warning", "⚠️ You are not currently in any queue.");
+          return;
+        }
+
         try {
           showLoadingState("Leaving queue...");
 
           const response = await sessionRequest(
             `/api/queue/leave/${currentTicket.id}`,
-            { method: "DELETE" }
+            {
+              method: "DELETE",
+            }
           );
 
           hideLoadingState();
@@ -854,13 +861,14 @@
   `;
         document.getElementById("leaveQueueMessage").innerHTML = message;
 
+        // Create a new modal instance
         const modalElement = document.getElementById("leaveQueueModal");
         const modalInstance = new bootstrap.Modal(modalElement, {
           backdrop: "static",
         });
         modalInstance.show();
 
-        // Save instance on element so we can hide it later
+        // Save instance for hiding later
         modalElement.modalInstance = modalInstance;
       }
 
@@ -1597,7 +1605,7 @@
           modalInstance.hide();
 
           // Call your existing leaveQueue function
-          await leaveQueue();
+          await processLeaveQueue();
         });
     </script>
   </body>
