@@ -124,53 +124,66 @@
       <!-- Alerts -->
       <div id="alertContainer"></div>
 
-      <!-- Welcome Card -->
-      <div class="welcome-card" id="welcomeCard">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <h4 class="text-primary mb-2">
-              Good day, <span id="studentName">Student</span>!
-            </h4>
-            <p class="mb-1">
-              <strong>Student Code:</strong> <span id="studentCode">-</span>
-            </p>
-            <p class="mb-1">
-              <strong>Course:</strong> <span id="studentCourse">-</span>
-            </p>
-            <p class="mb-0">
-              <strong>Academic Year:</strong> <span id="studentYear">-</span>
-            </p>
-          </div>
-          <div class="col-md-4 text-center">
-            <div class="service-stats">
-              <i class="fas fa-clock fa-2x text-primary mb-2"></i>
-              <h5 class="mb-0" id="currentTime">--:--</h5>
-              <small class="text-muted">Current Time</small>
+      <!-- Tabs Menu -->
+      <ul class="nav nav-tabs mb-4" id="studentTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
+            data-bs-target="#profileTab" type="button" role="tab"
+            aria-controls="profileTab" aria-selected="true">
+            <i class="fas fa-id-card me-2"></i> Profile
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="settings-tab" data-bs-toggle="tab"
+            data-bs-target="#settingsTab" type="button" role="tab"
+            aria-controls="settingsTab" aria-selected="false">
+            <i class="fas fa-cog me-2"></i> Settings
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tab-content" id="studentTabsContent">
+
+        <!-- Profile Tab -->
+        <div class="tab-pane fade show active" id="profileTab" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="welcome-card" id="welcomeCard">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h4 class="text-primary mb-2">
+                  Good day, <span id="studentName">Student</span>!
+                </h4>
+                <p class="mb-1"><strong>Student Code:</strong> <span id="studentCode">-</span></p>
+                <p class="mb-1"><strong>Course:</strong> <span id="studentCourse">-</span></p>
+                <p class="mb-0"><strong>Academic Year:</strong> <span id="studentYear">-</span></p>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="service-stats">
+                  <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                  <h5 class="mb-0" id="currentTime">--:--</h5>
+                  <small class="text-muted">Current Time</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="row mb-4">
-        <div class="col-12">
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settingsTab" role="tabpanel" aria-labelledby="settings-tab">
           <div class="card service-card h-100">
             <div class="card-body text-center">
               <div class="service-icon text-secondary">
                 <i class="fas fa-cog"></i>
               </div>
               <h5 class="card-title">Settings</h5>
-              <p class="card-text">
-                Manage your account settings and password.
-              </p>
-              <a
-                href="studentSettings.html"
-                class="btn btn-join-queue text-white"
-              >
+              <p class="card-text">Manage your account settings and password.</p>
+              <a href="studentSettings.html" class="btn btn-join-queue text-white">
                 <i class="fas fa-arrow-right me-2"></i>Go to Settings
               </a>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Current Ticket Status -->
@@ -285,7 +298,7 @@
               </div>
               <button
                 class="btn btn-join-queue text-white"
-                onclick="joinQueue('Student Admission')"
+                onclick="joinQueue('Student Registration')"
               >
                 <i class="fas fa-plus me-2"></i>Join Queue
               </button>
