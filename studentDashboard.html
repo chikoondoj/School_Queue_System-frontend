@@ -127,16 +127,30 @@
       <!-- Tabs Menu -->
       <ul class="nav nav-tabs mb-4" id="studentTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="profile-tab" data-bs-toggle="tab"
-            data-bs-target="#profileTab" type="button" role="tab"
-            aria-controls="profileTab" aria-selected="true">
+          <button
+            class="nav-link active"
+            id="profile-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#profileTab"
+            type="button"
+            role="tab"
+            aria-controls="profileTab"
+            aria-selected="true"
+          >
             <i class="fas fa-id-card me-2"></i> Profile
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="settings-tab" data-bs-toggle="tab"
-            data-bs-target="#settingsTab" type="button" role="tab"
-            aria-controls="settingsTab" aria-selected="false">
+          <button
+            class="nav-link"
+            id="settings-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#settingsTab"
+            type="button"
+            role="tab"
+            aria-controls="settingsTab"
+            aria-selected="false"
+          >
             <i class="fas fa-cog me-2"></i> Settings
           </button>
         </li>
@@ -144,18 +158,29 @@
 
       <!-- Tabs Content -->
       <div class="tab-content" id="studentTabsContent">
-
         <!-- Profile Tab -->
-        <div class="tab-pane fade show active" id="profileTab" role="tabpanel" aria-labelledby="profile-tab">
+        <div
+          class="tab-pane fade show active"
+          id="profileTab"
+          role="tabpanel"
+          aria-labelledby="profile-tab"
+        >
           <div class="welcome-card" id="welcomeCard">
             <div class="row align-items-center">
               <div class="col-md-8">
                 <h4 class="text-primary mb-2">
                   Good day, <span id="studentName">Student</span>!
                 </h4>
-                <p class="mb-1"><strong>Student Code:</strong> <span id="studentCode">-</span></p>
-                <p class="mb-1"><strong>Course:</strong> <span id="studentCourse">-</span></p>
-                <p class="mb-0"><strong>Academic Year:</strong> <span id="studentYear">-</span></p>
+                <p class="mb-1">
+                  <strong>Student Code:</strong> <span id="studentCode">-</span>
+                </p>
+                <p class="mb-1">
+                  <strong>Course:</strong> <span id="studentCourse">-</span>
+                </p>
+                <p class="mb-0">
+                  <strong>Academic Year:</strong>
+                  <span id="studentYear">-</span>
+                </p>
               </div>
               <div class="col-md-4 text-center">
                 <div class="service-stats">
@@ -169,21 +194,30 @@
         </div>
 
         <!-- Settings Tab -->
-        <div class="tab-pane fade" id="settingsTab" role="tabpanel" aria-labelledby="settings-tab">
+        <div
+          class="tab-pane fade"
+          id="settingsTab"
+          role="tabpanel"
+          aria-labelledby="settings-tab"
+        >
           <div class="card service-card h-100">
             <div class="card-body text-center">
               <div class="service-icon text-secondary">
                 <i class="fas fa-cog"></i>
               </div>
               <h5 class="card-title">Settings</h5>
-              <p class="card-text">Manage your account settings and password.</p>
-              <a href="studentSettings.html" class="btn btn-join-queue text-white">
+              <p class="card-text">
+                Manage your account settings and password.
+              </p>
+              <a
+                href="studentSettings.html"
+                class="btn btn-join-queue text-white"
+              >
                 <i class="fas fa-arrow-right me-2"></i>Go to Settings
               </a>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Current Ticket Status -->
@@ -220,7 +254,7 @@
 
                   <button
                     class="btn btn-leave-queue btn-sm mt-2"
-                    onclick="leaveQueue()"
+                    onclick="openLeaveQueueModal()"
                   >
                     <i class="fas fa-times"></i> Leave Queue
                   </button>
@@ -376,6 +410,46 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Queue Confirmation Modal -->
+    <div
+      class="modal fade"
+      id="leaveQueueModal"
+      tabindex="-1"
+      aria-labelledby="leaveQueueModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="leaveQueueModalLabel">
+              <i class="fas fa-sign-out-alt me-2"></i> Leave Queue
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p id="leaveQueueMessage" class="mb-0"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="button" id="confirmLeaveQueue" class="btn btn-danger">
+              Yes, Leave Queue
+            </button>
           </div>
         </div>
       </div>
@@ -697,59 +771,94 @@
 
       // Enhanced leave queue function
       async function leaveQueue() {
+        if (!currentTicket) {
+          showAlert("warning", "⚠️ You are not currently in any queue.");
+          return;
+        }
+
+        // Fill modal message dynamically
+        const leaveMsg = `
+    Are you sure you want to leave the <strong>${currentTicket.serviceType}</strong> queue?<br>
+    <small>Your current position is <strong>${currentTicket.position}</strong>.</small>
+  `;
+        document.getElementById("leaveQueueMessage").innerHTML = leaveMsg;
+
+        // Show modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("leaveQueueModal")
+        );
+        modal.show();
+
+        // Ensure button isn’t double-bound
+        const confirmBtn = document.getElementById("confirmLeaveQueue");
+        confirmBtn.onclick = async () => {
+          modal.hide();
+          await processLeaveQueue();
+        };
+      }
+
+      async function processLeaveQueue() {
         try {
-          if (!currentTicket) {
-            showAlert("warning", "You are not currently in any queue.");
-            return;
-          }
-
-          const confirmation = confirm(
-            `Are you sure you want to leave the ${currentTicket.serviceType} queue?\n` +
-              `Your current position is: ${currentTicket.position}`
-          );
-
-          if (!confirmation) return;
-
           showLoadingState("Leaving queue...");
 
           const response = await sessionRequest(
             `/api/queue/leave/${currentTicket.id}`,
-            {
-              method: "DELETE",
-              body: JSON.stringify({
-                ticketId: currentTicket.id,
-                serviceType: currentTicket.serviceType,
-              }),
-            }
+            { method: "DELETE" }
           );
 
           hideLoadingState();
 
           if (!response.ok) {
-            throw new Error(`Leave failed: ${response.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(
+              errorData.message || `Leave failed (status ${response.status})`
+            );
           }
 
           const result = await response.json();
 
           if (result.success) {
             const leftServiceType = currentTicket.serviceType;
+            const leftTicketNum = currentTicket.ticketNumber;
+
             currentTicket = null;
             hideCurrentTicket();
 
-            showAlert("info", `✅ Left ${leftServiceType} queue successfully`);
+            showAlert(
+              "info",
+              `✅ You left the <strong>${leftServiceType}</strong> queue (Ticket #${leftTicketNum}) successfully.`
+            );
 
             // Emit socket event for real-time updates
-            socket.emit("studentLeftQueue", {
-              serviceType: leftServiceType,
-            });
+            socket.emit("studentLeftQueue", { serviceType: leftServiceType });
 
             await refreshQueueStats();
           }
         } catch (error) {
           hideLoadingState();
           console.error("Leave queue error:", error);
-          showAlert("danger", "❌ Failed to leave queue: " + error.message);
+          showAlert("danger", `❌ Failed to leave queue: ${error.message}`);
         }
+      }
+
+      function openLeaveQueueModal() {
+        if (!currentTicket) {
+          showAlert("warning", "⚠️ You are not currently in any queue.");
+          return;
+        }
+
+        // Update modal message
+        const message = `
+    You are about to leave the <strong>${currentTicket.serviceType}</strong> queue.<br>
+    <small class="text-muted">Your current position: ${currentTicket.position}</small>
+  `;
+        document.getElementById("leaveQueueMessage").innerHTML = message;
+
+        // Show the modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("leaveQueueModal")
+        );
+        modal.show();
       }
 
       // Real-time queue updates
@@ -957,10 +1066,13 @@
           }
 
           // Add join time
-          if (currentTicket.joinedAt) {
-            const joinTime = new Date(currentTicket.joinedAt);
+          if (currentTicket.createdAt) {
+            const joinTime = new Date(currentTicket.createdAt);
             document.getElementById("joinTime").textContent =
-              joinTime.toLocaleTimeString();
+              joinTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
           }
 
           document.getElementById("currentTicketSection").style.display =
@@ -1472,6 +1584,18 @@
           }
         });
       });
+
+      document
+        .getElementById("confirmLeaveQueue")
+        .addEventListener("click", async () => {
+          // Hide the modal before processing
+          const modalElement = document.getElementById("leaveQueueModal");
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          modalInstance.hide();
+
+          // Call your existing leaveQueue function
+          await leaveQueue();
+        });
     </script>
   </body>
 </html>
