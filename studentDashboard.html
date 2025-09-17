@@ -1137,32 +1137,23 @@
 
       // Enhanced queue overview
       function updateQueueOverview(counts, totalInQueue, lastUpdated) {
-        document.getElementById("totalQueue").textContent = totalInQueue;
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
 
-        document.getElementById("admissionCount").textContent =
-          counts.admission.count;
-        document.getElementById("admissionWait").textContent =
-          counts.admission.avgWait + " min avg";
+  setText("totalQueue", totalInQueue);
 
-        document.getElementById("registrationCount").textContent =
-          counts.registration.count;
-        document.getElementById("registrationWait").textContent =
-          counts.registration.avgWait + " min avg";
+  ["admission", "registration", "financial", "counseling"].forEach(key => {
+    if (counts[key]) {
+      setText(key + "Count", counts[key].count);
+      setText(key + "Wait", counts[key].avgWait + " min avg");
+    }
+  });
 
-        document.getElementById("financialCount").textContent =
-          counts.financial.count;
-        document.getElementById("financialWait").textContent =
-          counts.financial.avgWait + " min avg";
+  setText("lastUpdated", lastUpdated ? lastUpdated.toLocaleTimeString() : "Never");
+}
 
-        document.getElementById("counselingCount").textContent =
-          counts.counseling.count;
-        document.getElementById("counselingWait").textContent =
-          counts.counseling.avgWait + " min avg";
-
-        document.getElementById("lastUpdated").textContent = lastUpdated
-          ? lastUpdated.toLocaleTimeString()
-          : "Never";
-      }
 
       // Enhanced current ticket display
       function displayEnhancedCurrentTicket() {
