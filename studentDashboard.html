@@ -1154,33 +1154,32 @@
 
       // Enhanced current ticket display
       function displayEnhancedCurrentTicket() {
-        if (currentTicket) {
-          document.getElementById("ticketNumber").textContent =
-            currentTicket.ticketNumber;
-          document.getElementById("currentPosition").textContent =
-            currentTicket.position;
-          document.getElementById("serviceType").textContent =
-            currentTicket.serviceType;
+        if (!currentTicket) return;
 
-          // Add estimated wait time if available
-          if (currentTicket.estimatedWaitTime) {
-            document.getElementById(
-              "estimatedWait"
-            ).textContent = `${currentTicket.estimatedWaitTime} minutes`;
-          }
+        const ticketSection = document.getElementById("currentTicketSection");
+        if (ticketSection) ticketSection.style.display = "block";
 
-          // Add join time
-          if (currentTicket.createdAt) {
-            const joinTime = new Date(currentTicket.createdAt);
-            document.getElementById("joinTime").textContent =
-              joinTime.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
-          }
+        const currentPosition = document.getElementById("currentPosition");
+        if (currentPosition)
+          currentPosition.textContent = currentTicket.position || "-";
 
-          document.getElementById("currentTicketSection").style.display =
-            "block";
+        const serviceType = document.getElementById("serviceType");
+        if (serviceType)
+          serviceType.textContent = currentTicket.serviceType || "-";
+
+        const estimatedWait = document.getElementById("estimatedWait");
+        if (estimatedWait)
+          estimatedWait.textContent = currentTicket.estimatedWaitTime
+            ? `${currentTicket.estimatedWaitTime} minutes`
+            : "-";
+
+        const joinTimeEl = document.getElementById("joinTime");
+        if (joinTimeEl && currentTicket.createdAt) {
+          const joinTime = new Date(currentTicket.createdAt);
+          joinTimeEl.textContent = joinTime.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
         }
       }
 
