@@ -658,12 +658,20 @@
           if (ticketResponse.ok) {
             const ticketData = await ticketResponse.json();
             if (ticketData && ticketData.ticket) {
-              currentTicket = ticketData.ticket;
+              const ticket = ticketData.ticket;
+
+              // Map API fields to what displayEnhancedCurrentTicket expects
+              currentTicket = {
+                ticketNumber: ticket.id, // maps to ticketNumber
+                position: ticket.position, // already matches
+                serviceType: ticket.service, // maps to serviceType
+                estimatedWaitTime: ticket.estimatedWaitTime, // same
+                createdAt: ticket.queuedAt, // maps to createdAt
+              };
+
               displayEnhancedCurrentTicket();
             }
-          } //else if (ticketResponse.status === 404) {
-          //   hideCurrentTicket();
-          // }
+          }
 
           // Load queue statistics and history
           await loadQueueStatistics();
@@ -1630,7 +1638,7 @@
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden && socket) {
             // Refresh data when tab becomes visible
-            setTimeout(refreshData, 1000);
+            setTimeout(refreshData, 15000);
           }
         });
       });
