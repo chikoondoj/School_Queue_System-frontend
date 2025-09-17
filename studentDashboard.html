@@ -652,26 +652,25 @@
           }
 
           // Load current ticket with detailed info
-          const ticketResponse = await sessionRequest(
-            "/api/queue/my-ticket/detailed"
-          );
-          if (ticketResponse.ok) {
-            const ticketData = await ticketResponse.json();
-            if (ticketData && ticketData.ticket) {
-              const ticket = ticketData.ticket;
+          const ticketResponse = await sessionRequest("/api/queue/my-ticket/detailed");
+if (ticketResponse.ok) {
+  const ticketData = await ticketResponse.json();
+  if (ticketData && ticketData.ticket) {
+    const ticket = ticketData.ticket;
 
-              // Map API fields to what displayEnhancedCurrentTicket expects
-              currentTicket = {
-                ticketNumber: ticket.id, // maps to ticketNumber
-                position: ticket.position, // already matches
-                serviceType: ticket.service, // maps to serviceType
-                estimatedWaitTime: ticket.estimatedWaitTime, // same
-                createdAt: ticket.queuedAt, // maps to createdAt
-              };
+    // Map API fields to what displayEnhancedCurrentTicket expects
+    currentTicket = {
+      ticketNumber: null, // remove ticket ID
+      position: ticket.status === "WAITING" ? ticket.position : "-", // show only if waiting
+      serviceType: ticket.service?.name || "-", // access name from service object
+      estimatedWaitTime: ticket.estimatedWaitTime || "-", 
+      createdAt: ticket.queuedAt, // original queued time
+    };
 
-              displayEnhancedCurrentTicket();
-            }
-          }
+    displayEnhancedCurrentTicket();
+  }
+}
+
 
           // Load queue statistics and history
           await loadQueueStatistics();
