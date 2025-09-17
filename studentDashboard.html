@@ -35,10 +35,53 @@
       .ticket-card {
         background: linear-gradient(45deg, #28a745, #20c997);
         color: white;
-        border-radius: 15px;
-        padding: 2rem;
+        border-radius: 12px;
+        padding: 1.5rem;
         text-align: center;
-        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.25);
+        max-width: 100%;
+        transition: transform 0.2s;
+      }
+
+      .ticket-card h3 {
+        font-size: 1.3rem;
+      }
+
+      .ticket-card h5 {
+        font-size: 1rem;
+        margin-bottom: 0;
+      }
+
+      .position-badge {
+        font-size: 1.2rem;
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+      }
+
+      #estimatedWait,
+      #joinTime {
+        font-weight: bold;
+        display: block;
+        font-size: 0.95rem;
+      }
+
+      .btn-leave-queue {
+        background-color: #dc3545;
+        border: none;
+        color: white;
+      }
+
+      .btn-leave-queue:hover {
+        background-color: #c82333;
+      }
+
+      .btn-outline-primary {
+        border-color: white;
+        color: white;
+      }
+
+      .btn-outline-primary:hover {
+        background-color: rgba(255, 255, 255, 0.2);
       }
       .ticket-number {
         font-size: 3rem;
@@ -222,18 +265,14 @@
 
       <!-- Current Ticket Status -->
       <div id="currentTicketSection" style="display: none">
-        <div class="row mb-4">
-          <div class="col-12">
+        <div class="row justify-content-center mb-4">
+          <div class="col-md-6 col-sm-8">
             <div class="ticket-card">
               <h3 class="mb-3">
                 <i class="fas fa-ticket-alt me-2"></i>Your Current Ticket
               </h3>
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="ticket-number" id="ticketNumber">-</div>
-                  <p class="mb-0">Ticket Number</p>
-                </div>
-                <div class="col-md-4">
+              <div class="row text-center">
+                <div class="col-6 mb-3">
                   <div
                     class="position-badge badge bg-light text-dark"
                     id="currentPosition"
@@ -242,29 +281,36 @@
                   </div>
                   <p class="mb-0">Position in Queue</p>
                 </div>
-                <div class="col-md-4">
-                  <h4 id="serviceType">-</h4>
+                <div class="col-6 mb-3">
+                  <h5 id="serviceType">-</h5>
                   <p class="mb-0">Service</p>
-
-                  <!-- ✅ Add estimated wait -->
-                  <p>Estimated Wait: <span id="estimatedWait">-</span></p>
-
-                  <!-- ✅ Add join time -->
-                  <p>Joined At: <span id="joinTime">-</span></p>
-
-                  <button
-                    class="btn btn-leave-queue btn-sm mt-2"
-                    onclick="openLeaveQueueModal()"
-                  >
-                    <i class="fas fa-times"></i> Leave Queue
-                  </button>
-                  <button
-                    class="btn btn-outline-primary btn-sm mt-2 ms-2"
-                    onclick="checkQueuePosition()"
-                  >
-                    <i class="fas fa-search-location"></i> Check Position
-                  </button>
                 </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-6">
+                  <p>Estimated Wait:</p>
+                  <span id="estimatedWait">-</span>
+                </div>
+                <div class="col-6">
+                  <p>Joined At:</p>
+                  <span id="joinTime">-</span>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-center mt-3 flex-wrap gap-2">
+                <button
+                  class="btn btn-leave-queue btn-sm"
+                  onclick="openLeaveQueueModal()"
+                >
+                  <i class="fas fa-times"></i> Leave Queue
+                </button>
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  onclick="checkQueuePosition()"
+                >
+                  <i class="fas fa-search-location"></i> Check Position
+                </button>
               </div>
             </div>
           </div>
@@ -652,25 +698,26 @@
           }
 
           // Load current ticket with detailed info
-          const ticketResponse = await sessionRequest("/api/queue/my-ticket/detailed");
-if (ticketResponse.ok) {
-  const ticketData = await ticketResponse.json();
-  if (ticketData && ticketData.ticket) {
-    const ticket = ticketData.ticket;
+          const ticketResponse = await sessionRequest(
+            "/api/queue/my-ticket/detailed"
+          );
+          if (ticketResponse.ok) {
+            const ticketData = await ticketResponse.json();
+            if (ticketData && ticketData.ticket) {
+              const ticket = ticketData.ticket;
 
-    // Map API fields to what displayEnhancedCurrentTicket expects
-    currentTicket = {
-      ticketNumber: null, // remove ticket ID
-      position: ticket.status === "WAITING" ? ticket.position : "-", // show only if waiting
-      serviceType: ticket.service?.name || "-", // access name from service object
-      estimatedWaitTime: ticket.estimatedWaitTime || "-", 
-      createdAt: ticket.queuedAt, // original queued time
-    };
+              // Map API fields to what displayEnhancedCurrentTicket expects
+              currentTicket = {
+                ticketNumber: null, // remove ticket ID
+                position: ticket.status === "WAITING" ? ticket.position : "-", // show only if waiting
+                serviceType: ticket.service?.name || "-", // access name from service object
+                estimatedWaitTime: ticket.estimatedWaitTime || "-",
+                createdAt: ticket.queuedAt, // original queued time
+              };
 
-    displayEnhancedCurrentTicket();
-  }
-}
-
+              displayEnhancedCurrentTicket();
+            }
+          }
 
           // Load queue statistics and history
           await loadQueueStatistics();
