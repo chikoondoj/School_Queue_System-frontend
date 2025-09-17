@@ -1297,6 +1297,7 @@
       async function fetchQueueStatus() {
         try {
           const response = await fetch(`/api/queue/services/detailed?ts=${Date.now()}`);
+          const text = response.text()
           const data = await response.json();
 
           if (data.success && data.services) {
