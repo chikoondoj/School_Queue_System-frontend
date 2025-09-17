@@ -1296,21 +1296,38 @@
 
       async function fetchQueueStatus() {
         try {
-          const response = await fetch("/api/queue/services/detailed");
+          const response = await fetch("/api/queue/services/detailed", {
+            cache: "no-store",
+          });
           const data = await response.json();
 
           if (data.success && data.services) {
-            // Build counts object from the fetched services
-            const counts = {};
+            // Map API service names to keys used in updateQueueOverview
+            const nameMap = {
+              "Student Admission": "admission",
+              "Student Registration": "registration",
+              "Financial Aid": "financial",
+              Counseling: "counseling",
+            };
+
+            const counts = {
+              admission: { count: 0, avgWait: 0 },
+              registration: { count: 0, avgWait: 0 },
+              financial: { count: 0, avgWait: 0 },
+              counseling: { count: 0, avgWait: 0 },
+            };
+
             let totalInQueue = 0;
 
             data.services.forEach((service) => {
-              const key = service.name.toLowerCase().replace(/\s+/g, "");
-              counts[key] = {
-                count: service.totalInQueue,
-                avgWait: service.avgWaitTime || 0,
-              };
-              totalInQueue += service.totalInQueue;
+              const key = nameMap[service.name];
+              if (key) {
+                counts[key] = {
+                  count: service.totalInQueue,
+                  avgWait: service.avgWaitTime || 0,
+                };
+                totalInQueue += service.totalInQueue;
+              }
             });
 
             const lastUpdated = new Date();
@@ -1320,6 +1337,10 @@
           console.error("Failed to fetch queue status:", err);
         }
       }
+
+      // Initial fetch + periodic updates
+      fetchQueueStatus();
+      setInterval(fetchQueueStatus, 30000);
 
       // Call this periodically to update the queue overview dynamically
       setInterval(fetchQueueStatus, 30000); // update every 30 seconds
