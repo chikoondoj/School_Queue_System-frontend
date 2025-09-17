@@ -325,7 +325,52 @@
               <i class="fas fa-chart-line me-2"></i>Current Queue Status
             </h5>
             <div class="row" id="queueOverview">
-              <!-- Queue stats will be loaded here -->
+              <div class="col-md-2 text-center">
+                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                <h3 class="text-primary" id="totalQueue">0</h3>
+                <small class="text-muted">Total in Queue</small>
+              </div>
+              <div class="col-md-2 text-center">
+                <i class="fas fa-graduation-cap fa-2x text-primary mb-2"></i>
+                <h4 id="admissionCount">0</h4>
+                <small>Admission</small>
+                <div class="mt-1">
+                  <small class="text-muted" id="admissionWait">0 min avg</small>
+                </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <i class="fas fa-user-plus fa-2x text-success mb-2"></i>
+                <h4 id="registrationCount">0</h4>
+                <small>Registration</small>
+                <div class="mt-1">
+                  <small class="text-muted" id="registrationWait"
+                    >0 min avg</small
+                  >
+                </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                <h4 id="financialCount">0</h4>
+                <small>Financial Aid</small>
+                <div class="mt-1">
+                  <small class="text-muted" id="financialWait">0 min avg</small>
+                </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <i class="fas fa-comments fa-2x text-info mb-2"></i>
+                <h4 id="counselingCount">0</h4>
+                <small>Counseling</small>
+                <div class="mt-1">
+                  <small class="text-muted" id="counselingWait"
+                    >0 min avg</small
+                  >
+                </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
+                <small class="text-muted">Last Updated</small>
+                <div class="mt-1"><small id="lastUpdated">Never</small></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1092,64 +1137,31 @@
 
       // Enhanced queue overview
       function updateQueueOverview(counts, totalInQueue, lastUpdated) {
-        document.getElementById("queueOverview").innerHTML = `
-        <div class="row">
-          <div class="col-md-2 text-center">
-            <i class="fas fa-users fa-2x text-primary mb-2"></i>
-            <h3 class="text-primary">${totalInQueue}</h3>
-            <small class="text-muted">Total in Queue</small>
-          </div>
-          <div class="col-md-2 text-center">
-            <i class="fas fa-graduation-cap fa-2x text-primary mb-2"></i>
-            <h4>${counts.admission.count}</h4>
-            <small>Admission</small>
-            <div class="mt-1">
-              <small class="text-muted">${
-                counts.admission.avgWait
-              } min avg</small>
-            </div>
-          </div>
-          <div class="col-md-2 text-center">
-            <i class="fas fa-user-plus fa-2x text-success mb-2"></i>
-            <h4>${counts.registration.count}</h4>
-            <small>Registration</small>
-            <div class="mt-1">
-              <small class="text-muted">${
-                counts.registration.avgWait
-              } min avg</small>
-            </div>
-          </div>
-          <div class="col-md-2 text-center">
-            <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
-            <h4>${counts.financial.count}</h4>
-            <small>Financial Aid</small>
-            <div class="mt-1">
-              <small class="text-muted">${
-                counts.financial.avgWait
-              } min avg</small>
-            </div>
-          </div>
-          <div class="col-md-2 text-center">
-            <i class="fas fa-comments fa-2x text-info mb-2"></i>
-            <h4>${counts.counseling.count}</h4>
-            <small>Counseling</small>
-            <div class="mt-1">
-              <small class="text-muted">${
-                counts.counseling.avgWait
-              } min avg</small>
-            </div>
-          </div>
-          <div class="col-md-2 text-center">
-            <i class="fas fa-clock fa-2x text-secondary mb-2"></i>
-            <small class="text-muted">Last Updated</small>
-            <div class="mt-1">
-              <small>${
-                lastUpdated ? lastUpdated.toLocaleTimeString() : "Never"
-              }</small>
-            </div>
-          </div>
-        </div>
-      `;
+        document.getElementById("totalQueue").textContent = totalInQueue;
+
+        document.getElementById("admissionCount").textContent =
+          counts.admission.count;
+        document.getElementById("admissionWait").textContent =
+          counts.admission.avgWait + " min avg";
+
+        document.getElementById("registrationCount").textContent =
+          counts.registration.count;
+        document.getElementById("registrationWait").textContent =
+          counts.registration.avgWait + " min avg";
+
+        document.getElementById("financialCount").textContent =
+          counts.financial.count;
+        document.getElementById("financialWait").textContent =
+          counts.financial.avgWait + " min avg";
+
+        document.getElementById("counselingCount").textContent =
+          counts.counseling.count;
+        document.getElementById("counselingWait").textContent =
+          counts.counseling.avgWait + " min avg";
+
+        document.getElementById("lastUpdated").textContent = lastUpdated
+          ? lastUpdated.toLocaleTimeString()
+          : "Never";
       }
 
       // Enhanced current ticket display
