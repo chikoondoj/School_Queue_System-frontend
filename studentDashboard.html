@@ -706,12 +706,11 @@
             if (ticketData && ticketData.ticket) {
               const ticket = ticketData.ticket;
 
-              
               currentTicket = {
                 id: ticket.id,
                 ticketNumber: null,
                 position: ticket.status === "WAITING" ? ticket.position : "-",
-                serviceType: ticket.service?.name || "-", 
+                serviceType: ticket.service?.name || "-",
                 estimatedWaitTime: ticket.estimatedWaitTime || "-",
                 createdAt: ticket.queuedAt,
               };
@@ -1294,6 +1293,42 @@
           loadingOverlay.style.display = "none";
         }
       }
+
+      async function fetchQueueStatus() {
+        try {
+          const response = await fetch("/api/queue/services/detailed");
+          const data = await response.json();
+
+          if (data.success && data.services) {
+            // Build counts object from the fetched services
+            const counts = {};
+            let totalInQueue = 0;
+
+            data.services.forEach((service) => {
+              const key = service.name.toLowerCase().replace(/\s+/g, "");
+              counts[key] = {
+                count: service.totalInQueue,
+                avgWait: service.avgWaitTime || 0,
+              };
+              totalInQueue += service.totalInQueue;
+            });
+
+            const lastUpdated = new Date();
+            updateQueueOverview(counts, totalInQueue, lastUpdated);
+          }
+        } catch (err) {
+          console.error("Failed to fetch queue status:", err);
+        }
+      }
+
+      // Call this periodically to update the queue overview dynamically
+      setInterval(fetchQueueStatus, 30000); // update every 30 seconds
+      fetchQueueStatus(); // initial fetch
+
+      // Call on page load
+      document.addEventListener("DOMContentLoaded", fetchQueueStatus);
+      // Optionally refresh every 10 seconds
+      setInterval(fetchQueueStatus, 10000);
 
       // Update total queue count display
       function updateTotalQueueCount(total) {
