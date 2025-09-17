@@ -1296,9 +1296,7 @@
 
       async function fetchQueueStatus() {
         try {
-          const response = await fetch("/api/queue/services/detailed", {
-            cache: "no-store",
-          });
+          const response = await fetch(`/api/queue/services/detailed?ts=${Date.now()}`);
           const data = await response.json();
 
           if (data.success && data.services) {
@@ -1307,7 +1305,7 @@
               "Student Admission": "admission",
               "Student Registration": "registration",
               "Financial Aid": "financial",
-              Counseling: "counseling",
+              "Counseling": "counseling",
             };
 
             const counts = {
