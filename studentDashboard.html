@@ -1295,47 +1295,57 @@
       }
 
       async function fetchQueueStatus() {
-        try {
-          const response = await fetch(`/api/queue/services/detailed?ts=${Date.now()}`);
-          const text = response.text()
-          const data = await response.json();
+  try {
+    const response = await fetch(`/api/queue/services/detailed?ts=${Date.now()}`, { cache: "no-store" });
 
-          if (data.success && data.services) {
-            // Map API service names to keys used in updateQueueOverview
-            const nameMap = {
-              "Student Admission": "admission",
-              "Student Registration": "registration",
-              "Financial Aid": "financial",
-              "Counseling": "counseling",
-            };
+    if (!response.ok) {
+      console.error("Server returned", response.status, response.statusText);
+      return;
+    }
 
-            const counts = {
-              admission: { count: 0, avgWait: 0 },
-              registration: { count: 0, avgWait: 0 },
-              financial: { count: 0, avgWait: 0 },
-              counseling: { count: 0, avgWait: 0 },
-            };
+    const data = await response.json();
 
-            let totalInQueue = 0;
+    if (data.success && data.services) {
+      // Map API service names to keys used in updateQueueOverview
+      const nameMap = {
+        "Student Admission": "admission",
+        "Student Registration": "registration",
+        "Financial Aid": "financial",
+        "Counseling": "counseling"
+      };
 
-            data.services.forEach((service) => {
-              const key = nameMap[service.name];
-              if (key) {
-                counts[key] = {
-                  count: service.totalInQueue,
-                  avgWait: service.avgWaitTime || 0,
-                };
-                totalInQueue += service.totalInQueue;
-              }
-            });
+      const counts = {
+        admission: { count: 0, avgWait: 0 },
+        registration: { count: 0, avgWait: 0 },
+        financial: { count: 0, avgWait: 0 },
+        counseling: { count: 0, avgWait: 0 }
+      };
 
-            const lastUpdated = new Date();
-            updateQueueOverview(counts, totalInQueue, lastUpdated);
-          }
-        } catch (err) {
-          console.error("Failed to fetch queue status:", err);
+      let totalInQueue = 0;
+
+      data.services.forEach((service) => {
+        const key = nameMap[service.name];
+        if (key) {
+          counts[key] = {
+            count: service.totalInQueue,
+            avgWait: service.estimatedWaitTime
+          };
+          totalInQueue += service.totalInQueue;
         }
-      }
+      });
+
+      const lastUpdated = new Date();
+      updateQueueOverview(counts, totalInQueue, lastUpdated);
+    }
+  } catch (err) {
+    console.error("Failed to fetch queue status:", err);
+  }
+}
+
+// Initial fetch + periodic updates
+fetchQueueStatus();
+setInterval(fetchQueueStatus, 30000); // update every 30 seconds
+
 
       // Initial fetch + periodic updates
       fetchQueueStatus();
