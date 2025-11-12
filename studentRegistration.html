@@ -172,6 +172,16 @@
             phone: formData.get("phone") || null,
           };
 
+          if (registrationData.phone) {
+            const phoneRegex = /^(?:\+258)?(82|83|84|85)\d{7}$/;
+            if (!phoneRegex.test(registrationData.phone)) {
+              alert(
+                "Invalid phone number. Only Mozambican numbers (Tmcel and Vodacom) starting with +258 are allowed, followed by 7 digits."
+              );
+              return; // Stop form submission
+            }
+          }
+
           if (submitButton) {
             submitButton.disabled = true;
             submitButton.textContent = "Registering...";
