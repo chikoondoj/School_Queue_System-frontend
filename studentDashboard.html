@@ -727,19 +727,24 @@
 
       async function loadServices() {
         try {
-          const res = await fetch("/api/services/detailed"); // Your endpoint to get all services
-          const data = await res.json();
+          const response = await fetch("/api/services/detailed");
 
-          if (!res.ok || !data.success) {
-            throw new Error(data.error || "Failed to fetch services");
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP ${response.status}: ${text}`);
           }
 
-          const servicesSection = document.getElementById("servicesSection");
-          servicesSection.innerHTML = ""; // Clear existing content
+          const result = await response.json();
+          if (!result.success)
+            throw new Error(result.message || "Failed to load services");
 
-          data.data.services.forEach((service) => {
+          const servicesSection = document.getElementById("servicesSection");
+          servicesSection.innerHTML = ""; // Clear previous content
+
+          result.services.forEach((service) => {
             const card = document.createElement("div");
             card.className = "col-md-6 col-lg-3 mb-4";
+
             card.innerHTML = `
         <div class="card service-card h-100">
           <div class="card-body text-center">
@@ -749,16 +754,13 @@
             <h5 class="card-title">${service.name}</h5>
             <p class="card-text">${service.description}</p>
             <div class="service-stats mb-3">
-              <small class="text-muted">People in queue: </small>
-              <strong id="${service.id}Queue">${
-              service.currentQueue || 0
-            }</strong>
+              <small class="text-muted">People waiting: </small>
+              <strong>${service.waitingCount}</strong><br>
+              <small class="text-muted">Currently serving: </small>
+              <strong>${service.inProgressCount}</strong>
             </div>
-            <button
-              class="btn btn-join-queue text-white"
-              data-service-id="${service.id}"
-              onclick="joinQueue(this.dataset.serviceId)"
-            >
+            <button class="btn btn-join-queue text-white"
+              onclick="joinQueue(${service.id}, '${service.name}')">
               <i class="fas fa-plus me-2"></i>Join Queue
             </button>
           </div>
@@ -768,20 +770,18 @@
           });
         } catch (error) {
           console.error("Error loading services:", error);
-          document.getElementById("servicesSection").innerHTML =
-            "<p class='text-danger text-center'>Failed to load services.</p>";
+          showAlert("danger", `❌ Failed to load services: ${error.message}`);
         }
       }
 
-      // Call on page load
+      // Call it on page load
       loadServices();
 
       // Enhanced join queue function with better feedback
-      async function joinQueue(serviceId) {
+      async function joinQueue(serviceId, serviceName) {
         try {
-          console.log("Joining queue for service ID:", serviceId);
+          console.log("Joining queue for:", serviceName);
 
-          // Check if the student is already in a queue
           if (currentTicket) {
             showAlert(
               "warning",
@@ -790,14 +790,12 @@
             return;
           }
 
-          // Show loading state
-          showLoadingState(`Joining ${serviceId} queue...`);
+          showLoadingState(`Joining ${serviceName} queue...`);
 
-          // POST request to join queue
           const response = await sessionRequest("/api/queue/join", {
             method: "POST",
             body: JSON.stringify({
-              serviceId,
+              serviceId: serviceId,
               timestamp: new Date().toISOString(),
               studentInfo: {
                 name: studentData.name,
@@ -808,7 +806,6 @@
 
           hideLoadingState();
 
-          // Handle HTTP errors
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || `Join failed: ${response.status}`);
@@ -816,47 +813,38 @@
 
           const result = await response.json();
 
-          // Handle successful join
           if (result.success && result.ticket) {
             currentTicket = result.ticket;
-
-            // Update UI with current ticket info
             displayEnhancedCurrentTicket();
 
-            // Scroll to current ticket section
-            document.getElementById("currentTicketSection")?.scrollIntoView({
+            document.getElementById("currentTicketSection").scrollIntoView({
               behavior: "smooth",
               block: "start",
             });
 
-            // Show success alert with estimated wait and position
             const waitTimeMsg = result.estimatedWaitTime
               ? ` Estimated wait: ${result.estimatedWaitTime} minutes.`
               : "";
 
             showAlert(
               "success",
-              `✅ Joined ${serviceId} queue successfully!<br>
+              `✅ Joined ${serviceName} queue successfully!<br>
          📍 Position: ${result.ticket.position}<br>
          🎫 Ticket: ${result.ticket.ticketNumber}${waitTimeMsg}`
             );
 
-            // Emit real-time socket event
             socket.emit("studentJoinedQueue", {
               serviceId,
               ticketNumber: result.ticket.ticketNumber,
               position: result.ticket.position,
             });
 
-            // Update queue stats dynamically
             await refreshQueueStats();
-          } else {
-            throw new Error("Failed to join queue - invalid response.");
           }
         } catch (error) {
           hideLoadingState();
           console.error("Join queue error:", error);
-          showAlert("danger", `❌ Failed to join queue: ${error.message}`);
+          showAlert("danger", "❌ Failed to join queue: " + error.message);
         }
       }
 
