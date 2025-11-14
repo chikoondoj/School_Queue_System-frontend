@@ -376,114 +376,8 @@
         </div>
       </div>
 
-      <!-- Services -->
       <h4 class="mb-4 text-center">Choose a Service</h4>
-      <div class="row" id="servicesSection">
-        <!-- Student Admission -->
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card service-card h-100">
-            <div class="card-body text-center">
-              <div class="service-icon text-primary">
-                <i class="fas fa-graduation-cap"></i>
-              </div>
-              <h5 class="card-title">Student Admission</h5>
-              <p class="card-text">
-                Get help with admission processes, document verification, and
-                enrollment procedures.
-              </p>
-              <div class="service-stats mb-3">
-                <small class="text-muted">People in queue: </small>
-                <strong id="admissionQueue">0</strong>
-              </div>
-              <button
-                class="btn btn-join-queue text-white"
-                onclick="joinQueue('Student Admission')"
-              >
-                <i class="fas fa-plus me-2"></i>Join Queue
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Student Registration -->
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card service-card h-100">
-            <div class="card-body text-center">
-              <div class="service-icon text-success">
-                <i class="fas fa-user-plus"></i>
-              </div>
-              <h5 class="card-title">Student Registration</h5>
-              <p class="card-text">
-                Course registration, schedule changes, and academic planning
-                assistance.
-              </p>
-              <div class="service-stats mb-3">
-                <small class="text-muted">People in queue: </small>
-                <strong id="registrationQueue">0</strong>
-              </div>
-              <button
-                class="btn btn-join-queue text-white"
-                onclick="joinQueue('Student Registration')"
-              >
-                <i class="fas fa-plus me-2"></i>Join Queue
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Financial Aid -->
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card service-card h-100">
-            <div class="card-body text-center">
-              <div class="service-icon text-warning">
-                <i class="fas fa-dollar-sign"></i>
-              </div>
-              <h5 class="card-title">Financial Aid</h5>
-              <p class="card-text">
-                Scholarships, bursaries, payment plans, and financial assistance
-                programs.
-              </p>
-              <div class="service-stats mb-3">
-                <small class="text-muted">People in queue: </small>
-                <strong id="financialQueue">0</strong>
-              </div>
-              <button
-                class="btn btn-join-queue text-white"
-                onclick="joinQueue('Financial Aid')"
-              >
-                <i class="fas fa-plus me-2"></i>Join Queue
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Counseling -->
-        <div class="col-md-6 col-lg-3 mb-4">
-          <div class="card service-card h-100">
-            <div class="card-body text-center">
-              <div class="service-icon text-info">
-                <i class="fas fa-comments"></i>
-              </div>
-              <h5 class="card-title">Counseling</h5>
-              <p class="card-text">
-                Academic counseling, career guidance, and personal support
-                services.
-              </p>
-              <div class="service-stats mb-3">
-                <small class="text-muted">People in queue: </small>
-                <strong id="counselingQueue">0</strong>
-              </div>
-              <button
-                class="btn btn-join-queue text-white"
-                onclick="joinQueue('Counseling')"
-              >
-                <i class="fas fa-plus me-2"></i>Join Queue
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <div class="row" id="servicesSection"></div>
       <!-- Recent Activity -->
       <div class="row mt-5">
         <div class="col-12">
@@ -831,12 +725,63 @@
         }
       }
 
-      // Enhanced join queue function with better feedback
-      async function joinQueue(serviceType) {
+      async function loadServices() {
         try {
-          console.log("Joining queue for:", serviceType);
+          const res = await fetch("/api/services"); // Your endpoint to get all services
+          const data = await res.json();
 
-          // Check if already in a queue
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || "Failed to fetch services");
+          }
+
+          const servicesSection = document.getElementById("servicesSection");
+          servicesSection.innerHTML = ""; // Clear existing content
+
+          data.data.services.forEach((service) => {
+            const card = document.createElement("div");
+            card.className = "col-md-6 col-lg-3 mb-4";
+            card.innerHTML = `
+        <div class="card service-card h-100">
+          <div class="card-body text-center">
+            <div class="service-icon text-primary">
+              <i class="fas fa-concierge-bell"></i>
+            </div>
+            <h5 class="card-title">${service.name}</h5>
+            <p class="card-text">${service.description}</p>
+            <div class="service-stats mb-3">
+              <small class="text-muted">People in queue: </small>
+              <strong id="${service.id}Queue">${
+              service.currentQueue || 0
+            }</strong>
+            </div>
+            <button
+              class="btn btn-join-queue text-white"
+              data-service-id="${service.id}"
+              onclick="joinQueue(this.dataset.serviceId)"
+            >
+              <i class="fas fa-plus me-2"></i>Join Queue
+            </button>
+          </div>
+        </div>
+      `;
+            servicesSection.appendChild(card);
+          });
+        } catch (error) {
+          console.error("Error loading services:", error);
+          document.getElementById("servicesSection").innerHTML =
+            "<p class='text-danger text-center'>Failed to load services.</p>";
+        }
+      }
+
+      // Call on page load
+      loadServices();
+
+      // Enhanced join queue function with better feedback
+      async function joinQueue(serviceId) {
+        try {
+          console.log("Joining queue for service ID:", serviceId);
+
+          // Check if the student is already in a queue
           if (currentTicket) {
             showAlert(
               "warning",
@@ -846,12 +791,13 @@
           }
 
           // Show loading state
-          showLoadingState(`Joining ${serviceType} queue...`);
+          showLoadingState(`Joining ${serviceId} queue...`);
 
+          // POST request to join queue
           const response = await sessionRequest("/api/queue/join", {
             method: "POST",
             body: JSON.stringify({
-              serviceId: serviceType,
+              serviceId,
               timestamp: new Date().toISOString(),
               studentInfo: {
                 name: studentData.name,
@@ -862,6 +808,7 @@
 
           hideLoadingState();
 
+          // Handle HTTP errors
           if (!response.ok) {
             const error = await response.json();
             throw new Error(error.message || `Join failed: ${response.status}`);
@@ -869,44 +816,47 @@
 
           const result = await response.json();
 
+          // Handle successful join
           if (result.success && result.ticket) {
             currentTicket = result.ticket;
+
+            // Update UI with current ticket info
             displayEnhancedCurrentTicket();
 
-            // Scroll smoothly to current ticket
-            const ticketSection = document.getElementById(
-              "currentTicketSection"
-            );
-            ticketSection.scrollIntoView({
+            // Scroll to current ticket section
+            document.getElementById("currentTicketSection")?.scrollIntoView({
               behavior: "smooth",
               block: "start",
             });
 
-            // Show success with estimated wait time
+            // Show success alert with estimated wait and position
             const waitTimeMsg = result.estimatedWaitTime
               ? ` Estimated wait: ${result.estimatedWaitTime} minutes.`
               : "";
 
             showAlert(
               "success",
-              `✅ Joined ${serviceType} queue successfully!<br>
+              `✅ Joined ${serviceId} queue successfully!<br>
          📍 Position: ${result.ticket.position}<br>
          🎫 Ticket: ${result.ticket.ticketNumber}${waitTimeMsg}`
             );
 
-            // Emit socket event for real-time updates
+            // Emit real-time socket event
             socket.emit("studentJoinedQueue", {
-              serviceType: serviceType,
+              serviceId,
               ticketNumber: result.ticket.ticketNumber,
               position: result.ticket.position,
             });
 
+            // Update queue stats dynamically
             await refreshQueueStats();
+          } else {
+            throw new Error("Failed to join queue - invalid response.");
           }
         } catch (error) {
           hideLoadingState();
           console.error("Join queue error:", error);
-          showAlert("danger", "❌ Failed to join queue: " + error.message);
+          showAlert("danger", `❌ Failed to join queue: ${error.message}`);
         }
       }
 
@@ -1137,23 +1087,27 @@
 
       // Enhanced queue overview
       function updateQueueOverview(counts, totalInQueue, lastUpdated) {
-  const setText = (id, value) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  };
+        const setText = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value;
+        };
 
-  setText("totalQueue", totalInQueue);
+        setText("totalQueue", totalInQueue);
 
-  ["admission", "registration", "financial", "counseling"].forEach(key => {
-    if (counts[key]) {
-      setText(key + "Count", counts[key].count);
-      setText(key + "Wait", counts[key].avgWait + " min avg");
-    }
-  });
+        ["admission", "registration", "financial", "counseling"].forEach(
+          (key) => {
+            if (counts[key]) {
+              setText(key + "Count", counts[key].count);
+              setText(key + "Wait", counts[key].avgWait + " min avg");
+            }
+          }
+        );
 
-  setText("lastUpdated", lastUpdated ? lastUpdated.toLocaleTimeString() : "Never");
-}
-
+        setText(
+          "lastUpdated",
+          lastUpdated ? lastUpdated.toLocaleTimeString() : "Never"
+        );
+      }
 
       // Enhanced current ticket display
       function displayEnhancedCurrentTicket() {
