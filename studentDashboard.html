@@ -727,7 +727,7 @@
 
       async function loadServices() {
         try {
-          const res = await fetch("/api/services"); // Your endpoint to get all services
+          const res = await fetch("/api/services/detailed"); // Your endpoint to get all services
           const data = await res.json();
 
           if (!res.ok || !data.success) {
