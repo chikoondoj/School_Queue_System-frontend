@@ -556,27 +556,26 @@
     </div>
 
     <div class="card mt-4 shadow-sm">
-      <div class="card-header bg-white">
-        <h5 class="mb-0"><i class="fas fa-table me-2"></i> Report Results</h5>
-      </div>
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead>
-              <tr>
-                <th>Service ID</th>
-                <th>Service Name</th>
-                <th>Total Attended</th>
-              </tr>
-            </thead>
-            <tbody id="reportTableBody">
-              <tr><td colspan="3" class="text-center py-4">Select a month to view data</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <div class="card-header bg-white">
+    <h5 class="mb-0"><i class="fas fa-table me-2"></i> Report Results</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Service Name</th>
+            <th>Clerk Name</th>
+            <th>Total Attended</th>
+          </tr>
+        </thead>
+        <tbody id="reportTableBody">
+          <tr><td colspan="3" class="text-center py-4">Select a month to view data</td></tr>
+        </tbody>
+      </table>
     </div>
-  `;
+  </div>
+</div>`;
       }
 
       async function loadMonthlyReport() {
@@ -589,11 +588,8 @@
         try {
           const res = await fetch(
             `${BASE_URL}/api/admin/reports/monthly?month=${month}&year=${year}`,
-            {
-              credentials: "include",
-            }
+            { credentials: "include" }
           );
-
           const data = await res.json();
 
           if (!data.success) {
@@ -606,17 +602,34 @@
             return;
           }
 
-          tbody.innerHTML = data.data
-            .map(
-              (r) => `
-      <tr>
-        <td>${r.serviceId}</td>
-        <td>${r.serviceName}</td>
-        <td><strong>${r.totalAttended}</strong></td>
-      </tr>
-    `
-            )
-            .join("");
+          // Build nested rows: service -> clerks
+          let rows = "";
+          data.data.forEach((service) => {
+            const clerkCount = service.clerks?.length || 0;
+            if (clerkCount === 0) {
+              rows += `
+          <tr>
+            <td>${service.serviceName}</td>
+            <td>--</td>
+            <td>0</td>
+          </tr>`;
+            } else {
+              service.clerks.forEach((clerk, index) => {
+                rows += `
+            <tr>
+              ${
+                index === 0
+                  ? `<td rowspan="${clerkCount}">${service.serviceName}</td>`
+                  : ""
+              }
+              <td>${clerk.clerkName}</td>
+              <td>${clerk.totalAttended}</td>
+            </tr>`;
+              });
+            }
+          });
+
+          tbody.innerHTML = rows;
         } catch (err) {
           tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">
       Error: ${err.message}
