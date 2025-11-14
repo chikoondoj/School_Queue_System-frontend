@@ -582,6 +582,16 @@
         const month = document.getElementById("reportMonth").value;
         const year = document.getElementById("reportYear").value;
 
+        let query = "";
+        if (month && year) query = `?month=${month}&year=${year}`;
+
+        const res = await fetch(
+          `${BASE_URL}/api/admin/reports/monthly${query}`,
+          {
+            credentials: "include",
+          }
+        );
+
         const tbody = document.getElementById("reportTableBody");
         tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4">Loading...</td></tr>`;
 
