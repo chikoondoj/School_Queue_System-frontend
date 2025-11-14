@@ -107,6 +107,9 @@
       <a href="#" onclick="showStudents()"
         ><i class="fas fa-user-graduate me-2"></i> Students</a
       >
+      <a href="#" onclick="showReports()">
+        <i class="fas fa-chart-line me-2"></i> Reports
+      </a>
       <a href="#" onclick="logout()"
         ><i class="fas fa-sign-out-alt me-2"></i> Logout</a
       >
@@ -515,6 +518,109 @@
           document.getElementById("studentsContainer").innerHTML = `
       <div class="alert alert-danger">Failed to load students: ${err.message}</div>
     `;
+        }
+      }
+
+      function showReports() {
+        document.getElementById("mainContent").innerHTML = `
+    <h2><i class="fas fa-chart-line me-2"></i> Monthly Reports</h2>
+
+    <div class="row mt-3">
+      <div class="col-md-3">
+        <label class="form-label">Month</label>
+        <select id="reportMonth" class="form-select">
+          ${Array.from(
+            { length: 12 },
+            (_, i) =>
+              `<option value="${i + 1}">${new Date(0, i).toLocaleString("en", {
+                month: "long",
+              })}</option>`
+          ).join("")}
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Year</label>
+        <select id="reportYear" class="form-select">
+          ${[2024, 2025, 2026]
+            .map((y) => `<option value="${y}">${y}</option>`)
+            .join("")}
+        </select>
+      </div>
+
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary w-100" onclick="loadMonthlyReport()">
+          <i class="fas fa-search"></i> Generate Report
+        </button>
+      </div>
+    </div>
+
+    <div class="card mt-4 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="fas fa-table me-2"></i> Report Results</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Service ID</th>
+                <th>Service Name</th>
+                <th>Total Attended</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <tr><td colspan="3" class="text-center py-4">Select a month to view data</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+      }
+
+      async function loadMonthlyReport() {
+        const month = document.getElementById("reportMonth").value;
+        const year = document.getElementById("reportYear").value;
+
+        const tbody = document.getElementById("reportTableBody");
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4">Loading...</td></tr>`;
+
+        try {
+          const res = await fetch(
+            `${BASE_URL}/api/admin/reports/monthly?month=${month}&year=${year}`,
+            {
+              credentials: "include",
+            }
+          );
+
+          const data = await res.json();
+
+          if (!data.success) {
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">${data.message}</td></tr>`;
+            return;
+          }
+
+          if (data.data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4">No data for this period.</td></tr>`;
+            return;
+          }
+
+          tbody.innerHTML = data.data
+            .map(
+              (r) => `
+      <tr>
+        <td>${r.serviceId}</td>
+        <td>${r.serviceName}</td>
+        <td><strong>${r.totalAttended}</strong></td>
+      </tr>
+    `
+            )
+            .join("");
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-4">
+      Error: ${err.message}
+    </td></tr>`;
         }
       }
 
