@@ -727,7 +727,7 @@
 
       async function loadServices() {
         try {
-          const response = await fetch("/api/queue/services/detailed");
+          const response = await fetch(`${BASE_URL}/api/queue/services/detailed`);
 
           if (!response.ok) {
             const text = await response.text();
