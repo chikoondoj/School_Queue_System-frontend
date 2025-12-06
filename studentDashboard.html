@@ -762,8 +762,10 @@
               <strong>${service.inProgressCount}</strong>
             </div>
             <button class="btn btn-join-queue text-white"
-              onclick='joinQueue(${service.id}, ${JSON.stringify(
-              service.name
+              onclick='joinQueue(${JSON.stringify(
+                service.id
+              )}, ${JSON.stringify(service.name)})'
+
             )})'
 >
               <i class="fas fa-plus me-2"></i>Join Queue
@@ -1657,7 +1659,10 @@
       // Enhanced error handling
       window.addEventListener("error", function (event) {
         console.error("Global error:", event.error);
-         console.log("🔥 Element that caused the error:", event.target.outerHTML);
+        console.log(
+          "🔥 Element that caused the error:",
+          event.target.outerHTML
+        );
         showAlert(
           "danger",
           "❌ An unexpected error occurred. Please refresh the page."
