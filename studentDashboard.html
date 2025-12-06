@@ -760,7 +760,8 @@
               <strong>${service.inProgressCount}</strong>
             </div>
             <button class="btn btn-join-queue text-white"
-              onclick="joinQueue(${service.id}, '${service.name}')">
+              onclick="joinQueue(${service.id}, ${JSON.stringify(service.name)})"
+>
               <i class="fas fa-plus me-2"></i>Join Queue
             </button>
           </div>
