@@ -1657,6 +1657,7 @@
       // Enhanced error handling
       window.addEventListener("error", function (event) {
         console.error("Global error:", event.error);
+         console.log("🔥 Element that caused the error:", event.target.outerHTML);
         showAlert(
           "danger",
           "❌ An unexpected error occurred. Please refresh the page."
