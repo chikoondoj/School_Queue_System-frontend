@@ -727,7 +727,9 @@
 
       async function loadServices() {
         try {
-          const response = await fetch(`${BASE_URL}/api/queue/services/detailed`);
+          const response = await fetch(
+            `${BASE_URL}/api/queue/services/detailed`
+          );
 
           if (!response.ok) {
             const text = await response.text();
@@ -760,7 +762,9 @@
               <strong>${service.inProgressCount}</strong>
             </div>
             <button class="btn btn-join-queue text-white"
-              onclick="joinQueue(${service.id}, ${JSON.stringify(service.name)})"
+              onclick='joinQueue(${service.id}, ${JSON.stringify(
+              service.name
+            )})'
 >
               <i class="fas fa-plus me-2"></i>Join Queue
             </button>
