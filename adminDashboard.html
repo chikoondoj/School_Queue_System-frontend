@@ -669,9 +669,17 @@
           const data = await res.json();
 
           if (res.ok) {
-            alert(
-              `Password reset successfully!\n\nTemporary password: ${data.temporaryPassword}\n\nThe student must log in with this temporary password and change it immediately.`
-            );
+            const temporaryPassword =
+              data.temporaryPassword || data.data?.temporaryPassword;
+
+            if (!temporaryPassword) {
+              alert(
+                "Password reset successfully, but the server did not return the temporary password. Please try again after the backend is redeployed."
+              );
+              return;
+            }
+
+            showTemporaryPasswordModal(temporaryPassword);
           } else {
             alert(
               `Failed to reset password: ${data.message || "Unknown error"}`
@@ -680,6 +688,81 @@
         } catch (err) {
           alert(`Error: ${err.message}`);
         }
+      }
+
+      function showTemporaryPasswordModal(temporaryPassword) {
+        let modalEl = document.getElementById("temporaryPasswordModal");
+
+        if (!modalEl) {
+          document.body.insertAdjacentHTML(
+            "beforeend",
+            `
+            <div class="modal fade" id="temporaryPasswordModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header bg-warning">
+                    <h5 class="modal-title">
+                      <i class="fas fa-key me-2"></i>Temporary Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="mb-3">Give this temporary password to the student. They must change it after logging in.</p>
+                    <label for="temporaryPasswordValue" class="form-label">Temporary password</label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="temporaryPasswordValue"
+                        readonly
+                      />
+                      <button
+                        class="btn btn-outline-primary"
+                        type="button"
+                        id="copyTemporaryPasswordBtn"
+                      >
+                        <i class="fas fa-copy me-2"></i>Copy
+                      </button>
+                    </div>
+                    <div class="small text-success mt-2 d-none" id="copyTemporaryPasswordStatus">
+                      Copied to clipboard
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>`
+          );
+
+          modalEl = document.getElementById("temporaryPasswordModal");
+          document
+            .getElementById("copyTemporaryPasswordBtn")
+            .addEventListener("click", copyTemporaryPassword);
+        }
+
+        const passwordInput = document.getElementById("temporaryPasswordValue");
+        const copyStatus = document.getElementById("copyTemporaryPasswordStatus");
+        passwordInput.value = temporaryPassword;
+        copyStatus.classList.add("d-none");
+
+        new bootstrap.Modal(modalEl).show();
+      }
+
+      async function copyTemporaryPassword() {
+        const passwordInput = document.getElementById("temporaryPasswordValue");
+        const copyStatus = document.getElementById("copyTemporaryPasswordStatus");
+
+        try {
+          await navigator.clipboard.writeText(passwordInput.value);
+        } catch (err) {
+          passwordInput.select();
+          document.execCommand("copy");
+          passwordInput.blur();
+        }
+
+        copyStatus.classList.remove("d-none");
       }
 
       function logout() {
