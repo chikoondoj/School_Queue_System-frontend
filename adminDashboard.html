@@ -669,7 +669,9 @@
           const data = await res.json();
 
           if (res.ok) {
-            alert("Password reset successfully!");
+            alert(
+              `Password reset successfully!\n\nTemporary password: ${data.temporaryPassword}\n\nThe student must log in with this temporary password and change it immediately.`
+            );
           } else {
             alert(
               `Failed to reset password: ${data.message || "Unknown error"}`

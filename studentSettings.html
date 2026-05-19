@@ -67,7 +67,10 @@
           <i class="fas fa-key me-2"></i>Change Password
         </h4>
         <div id="alertContainer"></div>
-        <div class="text-center mb-4">
+        <div class="alert alert-warning d-none" id="forcePasswordChangeNotice" role="alert">
+          Your password was reset by an administrator. Set a new password to continue.
+        </div>
+        <div class="text-center mb-4" id="dashboardLinkContainer">
           <a href="./studentDashboard.html" class="btn btn-outline-primary">
             <i class="fas fa-arrow-left me-2"></i>Go to Dashboard
           </a>
@@ -158,6 +161,16 @@
         "passwordMatchMessage"
       );
       const alertContainer = document.getElementById("alertContainer");
+      const forcePasswordChange = new URLSearchParams(window.location.search).get(
+        "forcePasswordChange"
+      ) === "1";
+
+      if (forcePasswordChange) {
+        document
+          .getElementById("forcePasswordChangeNotice")
+          .classList.remove("d-none");
+        document.getElementById("dashboardLinkContainer").classList.add("d-none");
+      }
 
       // Password matching feedback
       confirmNewPassword.addEventListener("input", () => {

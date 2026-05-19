@@ -65,12 +65,18 @@ document
             name: result.user.name,
             studentCode: result.user.studentCode || null,
             role: result.user.role,
+            mustChangePassword: !!result.user.mustChangePassword,
             serviceId: result.user.serviceId || null,
           })
         );
 
         // Redirect based on role
         setTimeout(() => {
+          if (result.user.mustChangePassword) {
+            window.location.href = "./studentSettings.html?forcePasswordChange=1";
+            return;
+          }
+
           switch (result.user.role) {
             case "CLERK":
               window.location.href = "./clerkDashboard.html";
