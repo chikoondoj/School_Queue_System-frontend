@@ -455,6 +455,9 @@
         totalActiveTickets: 0,
         lastUpdated: null,
       };
+      let queueRefreshInFlight = false;
+      let queueStatusInFlight = false;
+      let lastQueueOverviewSignature = null;
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log("=== ENHANCED DASHBOARD LOADING ===");
@@ -469,7 +472,7 @@
         // Set up intervals for real-time updates
         updateCurrentTime();
         setInterval(updateCurrentTime, 60000);
-        setInterval(refreshQueueData, 10000); // More frequent queue updates
+        setInterval(refreshQueueData, 15000);
         setInterval(checkQueuePosition, 15000); // Check position updates
       });
 
@@ -532,7 +535,7 @@
             `A student joined ${data.serviceType} queue`,
             "info"
           );
-          refreshQueueStats();
+          refreshQueueData();
         });
 
         // Someone left queue notification
@@ -541,7 +544,7 @@
             `A student left ${data.serviceType} queue`,
             "warning"
           );
-          refreshQueueStats();
+          refreshQueueData();
         });
 
         // Service status updates
@@ -577,11 +580,6 @@
           }
         }
       }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        refreshQueueStats();
-        setInterval(refreshQueueStats, 15000); // refresh every 5 seconds
-      });
 
       // Load student profile from server (validates session)
       async function loadStudentProfile() {
@@ -851,7 +849,7 @@
               position: result.ticket.position,
             });
 
-            await refreshQueueStats();
+            await refreshQueueData();
           }
         } catch (error) {
           hideLoadingState();
@@ -927,7 +925,7 @@
             // Emit socket event for real-time updates
             socket.emit("studentLeftQueue", { serviceType: leftServiceType });
 
-            await refreshQueueStats();
+            await refreshQueueData();
           }
         } catch (error) {
           hideLoadingState();
@@ -987,38 +985,21 @@
           services = servicesData.data;
         }
 
-        let counts = {
-          admission: { count: 0, avgWait: 0, status: "active" },
-          registration: { count: 0, avgWait: 0, status: "active" },
-          financial: { count: 0, avgWait: 0, status: "active" },
-          counseling: { count: 0, avgWait: 0, status: "active" },
-        };
+        if (!Array.isArray(services) || services.length === 0) return;
+
+        const counts = getCurrentQueueOverview();
 
         services.forEach((service) => {
-          const serviceType = (
-            service.name ||
-            service.serviceType ||
-            ""
-          ).toLowerCase();
-          const queueCount =
-            service.queueCount || service.currentQueue || service.count || 0;
-          const avgWait = service.averageWaitTime || 0;
+          const serviceKey = getServiceKey(
+            service.name || service.serviceName || service.serviceType
+          );
+          if (!serviceKey) return;
+
+          const queueCount = getServiceQueueCount(service);
+          const avgWait = getServiceWaitTime(service);
           const status = service.status || "active";
 
-          switch (serviceType) {
-            case "student admission":
-              counts.admission = { count: queueCount, avgWait, status };
-              break;
-            case "student registration":
-              counts.registration = { count: queueCount, avgWait, status };
-              break;
-            case "financial aid":
-              counts.financial = { count: queueCount, avgWait, status };
-              break;
-            case "counseling":
-              counts.counseling = { count: queueCount, avgWait, status };
-              break;
-          }
+          counts[serviceKey] = { count: queueCount, avgWait, status };
         });
 
         // Update individual service cards with enhanced info
@@ -1032,7 +1013,73 @@
           (sum, service) => sum + service.count,
           0
         );
-        updateQueueOverview(counts, totalInQueue);
+        updateQueueOverview(counts, totalInQueue, new Date());
+      }
+
+      function getServiceKey(serviceName = "") {
+        const normalized = serviceName.toLowerCase().replace(/[_-]/g, " ");
+
+        if (normalized.includes("admission")) return "admission";
+        if (normalized.includes("registration")) return "registration";
+        if (normalized.includes("financial")) return "financial";
+        if (normalized.includes("counsel")) return "counseling";
+
+        return null;
+      }
+
+      function getServiceQueueCount(service) {
+        const value =
+          service.totalInQueue ??
+          service.queueCount ??
+          service.currentQueue ??
+          service.count ??
+          service.totalTickets ??
+          service.waitingCount ??
+          service.waiting ??
+          0;
+
+        return Number(value) || 0;
+      }
+
+      function getServiceWaitTime(service) {
+        const value =
+          service.estimatedWaitTime ??
+          service.averageWaitTime ??
+          service.avgWait ??
+          service.waitTime ??
+          0;
+
+        return Number(value) || 0;
+      }
+
+      function getCurrentQueueOverview() {
+        const readNumber = (id) => {
+          const value = document.getElementById(id)?.textContent || "0";
+          return Number.parseInt(value, 10) || 0;
+        };
+
+        return {
+          admission: {
+            count: readNumber("admissionCount"),
+            avgWait: readNumber("admissionWait"),
+            status: "active",
+          },
+          registration: {
+            count: readNumber("registrationCount"),
+            avgWait: readNumber("registrationWait"),
+            status: "active",
+          },
+          financial: {
+            count: readNumber("financialCount"),
+            avgWait: readNumber("financialWait"),
+            status: "active",
+          },
+          counseling: {
+            count: readNumber("counselingCount"),
+            avgWait: readNumber("counselingWait"),
+            status: "active",
+          },
+        };
       }
 
       async function refreshServiceData() {
@@ -1048,12 +1095,6 @@
           console.error("Failed to refresh service data:", err);
         }
       }
-
-      // Run once on page load
-      refreshServiceData();
-
-      // Poll every 10 seconds for live updates
-      setInterval(refreshServiceData, 10000);
 
       // Update individual service card
       function updateServiceCard(serviceKey, serviceData) {
@@ -1087,6 +1128,21 @@
 
       // Enhanced queue overview
       function updateQueueOverview(counts, totalInQueue, lastUpdated) {
+        const signature = JSON.stringify({
+          totalInQueue,
+          admission: counts.admission?.count ?? 0,
+          admissionWait: counts.admission?.avgWait ?? 0,
+          registration: counts.registration?.count ?? 0,
+          registrationWait: counts.registration?.avgWait ?? 0,
+          financial: counts.financial?.count ?? 0,
+          financialWait: counts.financial?.avgWait ?? 0,
+          counseling: counts.counseling?.count ?? 0,
+          counselingWait: counts.counseling?.avgWait ?? 0,
+        });
+
+        if (signature === lastQueueOverviewSignature) return;
+        lastQueueOverviewSignature = signature;
+
         const setText = (id, value) => {
           const el = document.getElementById(id);
           if (el) el.textContent = value;
@@ -1103,10 +1159,9 @@
           }
         );
 
-        setText(
-          "lastUpdated",
-          lastUpdated ? lastUpdated.toLocaleTimeString() : "Never"
-        );
+        if (lastUpdated) {
+          setText("lastUpdated", lastUpdated.toLocaleTimeString());
+        }
       }
 
       // Enhanced current ticket display
@@ -1162,12 +1217,6 @@
               }
 
               displayEnhancedCurrentTicket();
-            } else {
-              // <-- ADD THIS
-              showAlert(
-                "info",
-                `Your position is still ${positionData.position}.`
-              );
             }
           }
         } catch (error) {
@@ -1177,6 +1226,9 @@
 
       // Refresh queue data more frequently
       async function refreshQueueData() {
+        if (queueRefreshInFlight) return;
+        queueRefreshInFlight = true;
+
         try {
           const response = await sessionRequest("/api/queue/services/detailed");
           if (response.ok) {
@@ -1185,6 +1237,8 @@
           }
         } catch (error) {
           console.error("Queue refresh failed:", error);
+        } finally {
+          queueRefreshInFlight = false;
         }
       }
 
@@ -1252,6 +1306,9 @@
       }
 
       async function fetchQueueStatus() {
+        if (queueStatusInFlight) return;
+        queueStatusInFlight = true;
+
         try {
           const response = await sessionRequest("/api/queue/services/detailed");
 
@@ -1267,53 +1324,33 @@
           const data = await response.json();
           if (!data.success || !data.services) return;
 
-          // Map service names to keys
-          const nameMap = {
-            "Student Admission": "admission",
-            "Student Registration": "registration",
-            "Financial Aid": "financial",
-            Counseling: "counseling",
-          };
+          const counts = getCurrentQueueOverview();
 
-          let counts = {}; // start empty
-          let totalInQueue = 0;
-
-          // Populate counts fully before updating the overview
           for (const service of data.services) {
-            const key = nameMap[service.name];
+            const key = getServiceKey(
+              service.name || service.serviceName || service.serviceType
+            );
             if (key) {
               counts[key] = {
-                count: service.totalInQueue,
-                avgWait: service.estimatedWaitTime,
+                count: getServiceQueueCount(service),
+                avgWait: getServiceWaitTime(service),
+                status: service.status || "active",
               };
-              totalInQueue += service.totalInQueue;
             }
           }
 
-          // Only update once, when counts are ready
+          const totalInQueue = Object.values(counts).reduce(
+            (sum, service) => sum + service.count,
+            0
+          );
           const lastUpdated = new Date();
           updateQueueOverview(counts, totalInQueue, lastUpdated);
         } catch (err) {
           console.error("Failed to fetch queue status:", err);
+        } finally {
+          queueStatusInFlight = false;
         }
       }
-
-      // Initial fetch + periodic updates
-      fetchQueueStatus();
-      setInterval(fetchQueueStatus, 30000); // update every 30 seconds
-
-      // Initial fetch + periodic updates
-      fetchQueueStatus();
-      setInterval(fetchQueueStatus, 30000);
-
-      // Call this periodically to update the queue overview dynamically
-      setInterval(fetchQueueStatus, 30000); // update every 30 seconds
-      fetchQueueStatus(); // initial fetch
-
-      // Call on page load
-      document.addEventListener("DOMContentLoaded", fetchQueueStatus);
-      // Optionally refresh every 10 seconds
-      setInterval(fetchQueueStatus, 10000);
 
       // Update total queue count display
       function updateTotalQueueCount(total) {
