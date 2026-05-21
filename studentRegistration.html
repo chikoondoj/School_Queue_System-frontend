@@ -173,13 +173,25 @@
           };
 
           if (registrationData.phone) {
-            const phoneRegex = /^(?:\+258)?(82|83|84|85)\d{7}$/;
-            if (!phoneRegex.test(registrationData.phone)) {
+            let localPhone = registrationData.phone.replace(/\D/g, "");
+
+            if (localPhone.startsWith("00")) {
+              localPhone = localPhone.slice(2);
+            }
+
+            if (localPhone.startsWith("258")) {
+              localPhone = localPhone.slice(3);
+            }
+
+            const phoneRegex = /^(82|83|84|85)\d{7}$/;
+            if (!phoneRegex.test(localPhone)) {
               alert(
-                "Invalid phone number. Only Mozambican numbers (Tmcel and Vodacom) starting with +258 are allowed, followed by 7 digits."
+                "Invalid phone number. SMS notifications currently support only Tmcel/Mcel (82, 83) and Vodacom (84, 85). Movitel requires a registered Alpha Sender ID."
               );
               return; // Stop form submission
             }
+
+            registrationData.phone = `+258${localPhone}`;
           }
 
           if (submitButton) {
